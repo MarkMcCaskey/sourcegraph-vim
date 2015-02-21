@@ -7,7 +7,7 @@
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:g_vim_loaded=001
+let g:sg_vim_loaded=001
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -43,28 +43,32 @@ function SetLangVars()
 endfunction
 
 function! SG_Keybindings()
-	if !exists(g:sg_default_keybindings)
+	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-	"may need execute here
-		noremap <A-.> Sourcegraph_jump_to_definition()
-		noremap <C-A-d> Sourcegraph_describe()
-		noremap <C-A-e> Sourcegraph_usages()
+		echom "in here"
+		execute "normal! :noremap <C-a> :echom \"test\"<CR>"
+		"execute "normal! :noremap <C-1> :call Sourcegraph_jump_to_definition()<CR>"
+		execute "normal! :noremap <C-2> :call Sourcegraph_describe()<CR>"
+		execute "normal! :noremap <C-3> :call Sourcegraph_usages()<CR>"
 	else
-		unmap <A-.> 
-		unmap <C-A-d> 
-		unmap <C-A-e>
+		execute "normal! :unmap <C-1>" 
+		execute "normal! :unmap <C-2>"
+		execute "normal! :unmap <C-3>"
 	endif	
 endfunction
 
 function Sourcegraph_jump_to_definition()
+	echom "sourcegraph_jump_to_definition"
 endfunction
 
 function Sourcegraph_describe()
+	echom "sourcegraph_describe"
 endfunction
 
 function Sourcegraph_usages()
+	echom "sourcegraph_usages"
 endfunction
 
 
@@ -79,10 +83,11 @@ function Sourcegraph_search_site(search_terms)
 	endif
 	let l:search_string = @a
 
-	execute "normal! :!xdg-open \"" . l:base_url . "search?q=" . search_string . "\" ; sleep 5"
+	execute "normal! :!xdg-open \"" . l:base_url . "search?q=" . l:search_string . "\" ; sleep 5"
 	unlet l:search_string
 	unlet l:base_url
 endfunction
+	
 
 
 
