@@ -42,33 +42,31 @@ function SetLangVars()
 	unlet l:base_url
 endfunction
 
-function! SG_Keybindings()
+function SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-		echom "in here"
-		execute "normal! :noremap <C-a> :echom \"test\"<CR>"
-		"execute "normal! :noremap <C-1> :call Sourcegraph_jump_to_definition()<CR>"
-		execute "normal! :noremap <C-2> :call Sourcegraph_describe()<CR>"
-		execute "normal! :noremap <C-3> :call Sourcegraph_usages()<CR>"
+		:noremap ,a :call Sourcegraph_jump_to_definition()<CR>
+		:noremap ,o :call Sourcegraph_describe()<cr>
+		:noremap ,e :call Sourcegraph_usages()<cr>
 	else
-		execute "normal! :unmap <C-1>" 
-		execute "normal! :unmap <C-2>"
-		execute "normal! :unmap <C-3>"
+		:unmap ,a
+		:unmap ,o
+		:unmap ,e
 	endif	
 endfunction
 
 function Sourcegraph_jump_to_definition()
-	echom "sourcegraph_jump_to_definition"
+	:echom "sourcegraph_jump_to_definition"
 endfunction
 
 function Sourcegraph_describe()
-	echom "sourcegraph_describe"
+	:echom "sourcegraph_describe"
 endfunction
 
 function Sourcegraph_usages()
-	echom "sourcegraph_usages"
+	:echom "sourcegraph_usages"
 endfunction
 
 
