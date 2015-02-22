@@ -3,11 +3,10 @@
 "
 "
 "
-
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=001
+let g:sg_vim_loaded=002
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -67,6 +66,7 @@ function SG_Keybindings()
 endfunction
 
 function Sourcegraph_jump_to_definition()
+	:execute "normal! :!src api describe --file " . bufname("%") . " --start-byte " . Get_byte_offset() . "\<cr>"	
 	:echom "sourcegraph_jump_to_definition"
 endfunction
 
@@ -100,16 +100,17 @@ function Sourcegraph_search_site()
 		":call system( "open " . l:url . " &" )
 		"calling execute below with silent causes problems
 	elseif executable( "sensible-browser" ) "debian-based linux
-		:execute "!sensible-browser"  l:url . " &"
+		:silent execute "!sensible-browser"  l:url . " &"
 	elseif executable( "xdg-open" ) "linux
-		:execute "!xdg-open" l:url . " &"
+		:silent execute "!xdg-open" l:url . " &"
 	elseif executable( "firefox" )
-		:execute "!firefox" l:url . " &"
-	elseif executable( "chromium-browser" )
-		:execute "!chromium-browser" l:url . " &"
+		:silent execute "!firefox" l:url
+	elseif executable( "chromium-browser" ) . " &"
+		:silent execute "!chromium-browser" l:url
 	else 
 		echom "No browser found, please submit a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endif
+	:redraw!
 
 	unlet l:search_string
 	unlet l:base_url
@@ -121,6 +122,14 @@ function Supported_file()
 		return 1
 	endif
 	return 0
+endfunction
+
+function Get_byte_offset()
+	"added viw so that if called on first letter it stays on the same word
+	execute "normal! mqviwb"
+	let l:retval = line2byte(line("."))+col(".")
+	execute "normal! `q"
+	return l:retval
 endfunction
 
 :call SG_Keybindings()
