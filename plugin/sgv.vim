@@ -78,15 +78,15 @@ endfunction
 "function to be called by jump..., describe, and usages
 function Sourcegraph_call_src()
 	try
-		let l:debug = 	let l:output = system("src api describe --file " . expand("%:t") . ' --start-byte ' . Get_byte_offset())
+		let l:output = system("src api describe --file " . expand("%:t") . ' --start-byte ' . Get_byte_offset() . " 2>&1")
 	catch /^Vim\%((\a\+)\)=:E484/
+		"catch fish specific error
 		echom "If your default shell is fish, add 'set shell=/bin/bash' to your .vimrc.  Otherwise, please file a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
-	:vsplit .temp_srclib
+	:silent vsplit .temp_srclib
 	normal! ggdG
 	setlocal buftype=nofile
 	call append(0,split(l:output, '\v\n'))
-	call append(0,split(v:shell_error, '\v\n'))
 	unlet l:output
 endfunction
 

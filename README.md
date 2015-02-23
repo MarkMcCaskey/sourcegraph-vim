@@ -13,7 +13,8 @@ cd ~/.vim/bundle
 git clone https://github.com/MarkMcCaskey/sourcegraph-vim.git
 ```
 **NOTE**
-If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh`.  The Sourcegraph_call_src() function uses the system() function which uses the shell to run src.  This will cause an error.
+
+If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` to your `.vimrc`.  Vim will throw an error when trying to run certain commands through fish.
 
 ## Keybindings
 
