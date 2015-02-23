@@ -16,7 +16,11 @@ if !executable( "src" )
 	finish
 endif
 
-
+"close plugin if editing a file not currently supported
+"DISABLED FOR TESTING PURPOSES
+""if ! Supported_file()
+""       finish
+""endif       
 
 "This function can be used to get a list of currently supported languages
 "so that this plugin only runs when editing supported files
@@ -57,28 +61,48 @@ function SG_Keybindings()
 		:noremap ,o :call Sourcegraph_describe()<cr>
 		:noremap ,e :call Sourcegraph_usages()<cr>
 		:noremap ,u :call Sourcegraph_search_site()<cr>
-	else
-		:unmap ,a
-		:unmap ,o
-		:unmap ,e
-		:unmap ,u
 	endif	
 endfunction
 
+function Disable_SG_Keybindings()
+	if ! exists( "g:sg_default_keybindings" )
+		let g:sg_default_keybindings = 0
+	endif
+	unmap ,a
+	unmap ,o
+	unmap ,e
+	unmap ,u
+	let g:sg_default_keybindings = 0
+endfunction
+
+"function to be called by jump..., describe, and usages
+"Needs to be fixed, currently causes errors
+function Sourcegraph_call_src()
+	:vsplit .temp_srclib
+	:execute "normal! :!src api describe --file " . string(bufname("%")) . " --start-byte " . string(Get_byte_offset()) . "\<cr>"	
+endfunction
+
+"TODO: parsing and going to relevant information in newly opened buffer
+"Also, consider setting variable or checking if the buffer already exists
+"before opening new ones
 function Sourcegraph_jump_to_definition()
-	:execute "normal! :!src api describe --file " . bufname("%") . " --start-byte " . Get_byte_offset() . "\<cr>"	
+	:call Sourcegraph_call_src()
 	:echom "sourcegraph_jump_to_definition"
 endfunction
 
 function Sourcegraph_describe()
+	:call Sourcegraph_call_src()
 	:echom "sourcegraph_describe"
 endfunction
 
 function Sourcegraph_usages()
+	:call Sourcegraph_call_src()
 	:echom "sourcegraph_usages"
 endfunction
 
 
+"TODO: fix errors when called from inside of TTY/place where browsers cannot
+"be opened
 function Sourcegraph_search_site()
 	let l:base_url="https://sourcegraph.com/"
 	if( mode() ==? "v" ) 
@@ -117,6 +141,7 @@ function Sourcegraph_search_site()
 	unlet l:url
 endfunction
 	
+"TODO: add check for support on local machine by calling 'src toolchain list'
 function Supported_file()
 	if index( s:supported_languages, &filetype ) != -1
 		return 1
@@ -132,4 +157,5 @@ function Get_byte_offset()
 	return l:retval
 endfunction
 
+"'main': 
 :call SG_Keybindings()
