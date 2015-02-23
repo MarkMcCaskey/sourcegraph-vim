@@ -76,10 +76,18 @@ function Disable_SG_Keybindings()
 endfunction
 
 "function to be called by jump..., describe, and usages
-"Needs to be fixed, currently causes errors
 function Sourcegraph_call_src()
+	try
+		let l:debug = 	let l:output = system("src api describe --file " . expand("%:t") . ' --start-byte ' . Get_byte_offset())
+	catch /^Vim\%((\a\+)\)=:E484/
+		echom "If your default shell is fish, add 'set shell=/bin/bash' to your .vimrc.  Otherwise, please file a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
+	endtry
 	:vsplit .temp_srclib
-	:execute "normal! :!src api describe --file " . string(bufname("%")) . " --start-byte " . string(Get_byte_offset()) . "\<cr>"	
+	normal! ggdG
+	setlocal buftype=nofile
+	call append(0,split(l:output, '\v\n'))
+	call append(0,split(v:shell_error, '\v\n'))
+	unlet l:output
 endfunction
 
 "TODO: parsing and going to relevant information in newly opened buffer
