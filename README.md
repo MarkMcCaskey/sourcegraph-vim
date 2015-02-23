@@ -41,3 +41,14 @@ to your `.vimrc`.
 The control key is `<c-x>` and the alt key is `<a-x>` or `<m-x>` where x is any key.
 Due to the way Vim handles keybindings by level of specificity, trying to map these over existing keybindings may cause problems.
 (note: add more detail here later)
+
+## Help
+
+To read the documentation type `:help SG-Vim`.
+The general style of the tags is to capitalize the first letter of all words and prefix all Sourcegraph-Vim specific help documentation with `SG-Vim` or `Sourcegraph-Vim`.
+For example:
+```
+:help SG-VimUsages
+:help Sourcegraph-VimLicense
+:help SG-VimContents
+```

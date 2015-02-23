@@ -1,8 +1,8 @@
-"
-"
-"
-"
-"
+" Vim plugin for srclib (https://srclib.org)
+" Last Change: Feb 23 2015
+" Maintainer: mmccask2@gmu.edu
+" License: 
+
 if exists( "g:sg_vim_loaded" )
 	finish
 endif

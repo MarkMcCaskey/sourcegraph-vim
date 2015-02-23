@@ -1,0 +1,37 @@
+*Sourcegraph-Vim.txt* Vim plugin for srclib(https://srclib.org)
+
+*Sourcegraph-vim* *SG-Vim*
+A tool that gives Vim access to srclib, a polyglot code analysis library.
+Supports doc lookups, find-usages, and type information.
+
+==============================================================================
+Contents                            *SG-VimContents* *Sourcegraph-VimContents*
+
+	1. Usage............. |SG-VimUsage|
+	2. Mappings.......... |SG-VimMappings|
+	3. License........... |SG-VimLicense|
+	4. Bugs.............. |SG-VimBugs|
+	5. Contributing...... |SG-VimContributing|
+	6. Changelog......... |SG-VimChangelog|
+
+
+
+==============================================================================
+Section 1: Usage			  *SG-VimUsage* *Sourcegraph-VimUsage*
+
+==============================================================================
+Section 2: Mappings		    *SG-VimMappings* *Sourcegraph-VimMappings*
+
+==============================================================================
+Section 3: License		      *SG-VimLicense* *Sourcegraph-VimLicense*
+
+==============================================================================
+Section 4: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
+
+==============================================================================
+Section 5: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*
+
+==============================================================================
+Section 6: Changelog		  *SG-VimChangelog* *Sourcegraph-VimChangelog*
+
+
