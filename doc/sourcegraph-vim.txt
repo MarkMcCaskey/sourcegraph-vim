@@ -28,6 +28,15 @@ Section 3: License		      *SG-VimLicense* *Sourcegraph-VimLicense*
 ==============================================================================
 Section 4: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
 
+*SG-VimFish* *Sourcegraph-VimFish*
+Currently, using Fish (The friendly interactive shell) as the default shell
+that Vim uses will cause this plugin to crash.  You can change your the shell
+that Vim will use by adding > 
+set shell=/bin/bash 
+< or > 
+set shell/bin/sh 
+< to your .vimrc.
+
 ==============================================================================
 Section 5: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*
 

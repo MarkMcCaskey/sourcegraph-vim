@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Feb 23 2015
+" Last Change: Feb 24 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -101,7 +101,8 @@ function Sourcegraph_call_src( no_examples )
 		"Consider making an output specific color scheme and highlight 
 		"the buffer
 		setlocal buftype=nofile
-		call append(0,split(SG_parse_src(l:output), '\n'))
+		echom SG_parse_src(l:output)
+		call append(0,split(SG_parse_src(l:output),"\n"))
 	endif
 	unlet l:output
 	unlet l:sg_no_examples
@@ -185,8 +186,49 @@ function Get_byte_offset()
 endfunction
 
 function SG_parse_src( in )
-	return join(split(a:in,"\v({|,)"),"\n")
+	let l:tab = "   "
+	let l:itab = 0
+	let l:ret = ""
+	let l:one = split(a:in,'{\zs')
+	for c in l:one
+		let l:ret = l:ret . "\n" 
+		let l:i = 0
+		while l:i < l:itab
+			let l:ret = l:ret . l:tab
+			let l:i = l:i + 1	
+		endwhile
+		let l:ret = l:ret . c
+		let l:itab = l:itab + 1
+	endfor
+	let l:one = split(l:ret,',\zs')
+	let l:ret = ""
+	for c in l:one
+		let l:ret = l:ret . "\n" 
+		let l:i = 0
+		while l:i < l:itab
+			let l:ret = l:ret . l:tab
+			let l:i = l:i + 1	
+		endwhile
+		let l:ret = l:ret . c
+	endfor
+	let l:one = split(l:ret,'},\zs\|}\zs')
+	echo l:one
+	let l:ret = ""
+	let l:itab = 0
+	for c in l:one
+	"	let l:ret = l:ret . "\n" 
+		let l:i = 0
+		while l:i < l:itab
+			let l:ret = l:ret . l:tab
+			let l:i = l:i + 1	
+		endwhile
+		let l:ret = l:ret . "\n". c
+		let l:itab = l:itab - 1
+	endfor
+	return l:ret
+	"return join(split(join(l:one,"\n"),"}"),"\n}")
 endfunction
+
 
 "'main': 
 :call SG_Keybindings()

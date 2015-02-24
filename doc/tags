@@ -3,6 +3,7 @@ SG-VimBugs	sourcegraph-vim.txt	/*SG-VimBugs*
 SG-VimChangelog	sourcegraph-vim.txt	/*SG-VimChangelog*
 SG-VimContents	sourcegraph-vim.txt	/*SG-VimContents*
 SG-VimContributing	sourcegraph-vim.txt	/*SG-VimContributing*
+SG-VimFish	sourcegraph-vim.txt	/*SG-VimFish*
 SG-VimLicense	sourcegraph-vim.txt	/*SG-VimLicense*
 SG-VimMappings	sourcegraph-vim.txt	/*SG-VimMappings*
 SG-VimUsage	sourcegraph-vim.txt	/*SG-VimUsage*
@@ -11,6 +12,7 @@ Sourcegraph-VimBugs	sourcegraph-vim.txt	/*Sourcegraph-VimBugs*
 Sourcegraph-VimChangelog	sourcegraph-vim.txt	/*Sourcegraph-VimChangelog*
 Sourcegraph-VimContents	sourcegraph-vim.txt	/*Sourcegraph-VimContents*
 Sourcegraph-VimContributing	sourcegraph-vim.txt	/*Sourcegraph-VimContributing*
+Sourcegraph-VimFish	sourcegraph-vim.txt	/*Sourcegraph-VimFish*
 Sourcegraph-VimLicense	sourcegraph-vim.txt	/*Sourcegraph-VimLicense*
 Sourcegraph-VimMappings	sourcegraph-vim.txt	/*Sourcegraph-VimMappings*
 Sourcegraph-VimUsage	sourcegraph-vim.txt	/*Sourcegraph-VimUsage*
