@@ -6,7 +6,7 @@
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=002
+let g:sg_vim_loaded=003
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -76,41 +76,61 @@ function Disable_SG_Keybindings()
 endfunction
 
 "function to be called by jump..., describe, and usages
-function Sourcegraph_call_src()
+"TODO: find a way for system() to run more smoothly (open a background process
+"and run the command there, call a python or perl script, etc.)
+function Sourcegraph_call_src( no_examples )
+	let l:sg_no_examples = ""
+	if a:no_examples
+		let l:sg_no_examples = " --no-examples "
+	endif
 	try
-		let l:output = system("src api describe --file " . expand("%:t") . ' --start-byte ' . Get_byte_offset() . " 2>&1")
+		let l:output = system("src api describe --file " . 
+			\expand("%:t") . ' --start-byte ' . 
+			\Get_byte_offset() . l:sg_no_examples . " 2>&1")
 	catch /^Vim\%((\a\+)\)=:E484/
 		"catch fish specific error
-		echom "If your default shell is fish, add 'set shell=/bin/bash' to your .vimrc.  Otherwise, please file a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
+		echom "If your default shell is fish, add 'set shell=/bin/bash'
+			\to your .vimrc.  Otherwise, please file a bug report 
+			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
-	:silent vsplit .temp_srclib
-	normal! ggdG
-	setlocal buftype=nofile
-	call append(0,split(l:output, '\v\n'))
+	if l:output ==? "{}\n"
+		echom "No results found"
+	else
+		:silent vsplit .temp_srclib
+		normal! ggdG
+		"Consider making an output specific color scheme and highlight 
+		"the buffer
+		setlocal buftype=nofile
+		call append(0,split(SG_parse_src(l:output), '\n'))
+	endif
 	unlet l:output
+	unlet l:sg_no_examples
 endfunction
 
 "TODO: parsing and going to relevant information in newly opened buffer
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
 function Sourcegraph_jump_to_definition()
-	:call Sourcegraph_call_src()
+	:call Sourcegraph_call_src( 0 )
 	:echom "sourcegraph_jump_to_definition"
 endfunction
 
 function Sourcegraph_describe()
-	:call Sourcegraph_call_src()
+	:call Sourcegraph_call_src( 0 )
 	:echom "sourcegraph_describe"
 endfunction
 
 function Sourcegraph_usages()
-	:call Sourcegraph_call_src()
+	:call Sourcegraph_call_src( 0 )
 	:echom "sourcegraph_usages"
 endfunction
 
 
 "TODO: fix errors when called from inside of TTY/place where browsers cannot
 "be opened
+"The error appears to be that the error message gets written over Vim, adding
+"a redraw! command in this function doesn't seem to fix it, because the text
+"appearing is delayed
 function Sourcegraph_search_site()
 	let l:base_url="https://sourcegraph.com/"
 	if( mode() ==? "v" ) 
@@ -130,7 +150,6 @@ function Sourcegraph_search_site()
 		"open is a keyword in VimL
 		"TODO: find way to call open
 		":call system( "open " . l:url . " &" )
-		"calling execute below with silent causes problems
 	elseif executable( "sensible-browser" ) "debian-based linux
 		:silent execute "!sensible-browser"  l:url . " &"
 	elseif executable( "xdg-open" ) "linux
@@ -163,6 +182,10 @@ function Get_byte_offset()
 	let l:retval = line2byte(line("."))+col(".")
 	execute "normal! `q"
 	return l:retval
+endfunction
+
+function SG_parse_src( in )
+	return join(split(a:in,"\v({|,)"),"\n")
 endfunction
 
 "'main': 
