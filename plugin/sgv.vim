@@ -101,7 +101,7 @@ function Sourcegraph_call_src( no_examples )
 		"Consider making an output specific color scheme and highlight 
 		"the buffer
 		setlocal buftype=nofile
-		echom SG_parse_src(l:output)
+		"echom SG_parse_src(l:output)
 		call append(0,split(SG_parse_src(l:output),"\n"))
 	endif
 	unlet l:output
@@ -112,17 +112,17 @@ endfunction
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
 function Sourcegraph_jump_to_definition()
-	:call Sourcegraph_call_src( 0 )
+	:call Sourcegraph_call_src( 1 )
 	:echom "sourcegraph_jump_to_definition"
 endfunction
 
 function Sourcegraph_describe()
-	:call Sourcegraph_call_src( 0 )
+	:call Sourcegraph_call_src( 1 )
 	:echom "sourcegraph_describe"
 endfunction
 
 function Sourcegraph_usages()
-	:call Sourcegraph_call_src( 0 )
+	:call Sourcegraph_call_src( 1 )
 	:echom "sourcegraph_usages"
 endfunction
 
@@ -211,22 +211,25 @@ function SG_parse_src( in )
 		endwhile
 		let l:ret = l:ret . c
 	endfor
-	let l:one = split(l:ret,'},\zs\|}\zs')
-	echo l:one
-	let l:ret = ""
-	let l:itab = 0
-	for c in l:one
-	"	let l:ret = l:ret . "\n" 
-		let l:i = 0
-		while l:i < l:itab
-			let l:ret = l:ret . l:tab
-			let l:i = l:i + 1	
+	let l:i = 1
+	let l:one = split(l:ret,'}')
+	let l:ret = l:one[0]
+	while l:i < len(l:one)
+		let l:tabulator = ""
+		let l:j = 2
+		while l:j < l:itab
+			let l:tabulator = l:tabulator . l:tab
+			let l:j = l:j + 1
 		endwhile
-		let l:ret = l:ret . "\n". c
 		let l:itab = l:itab - 1
-	endfor
+		let l:ret = l:ret . "\n" . l:tabulator . "}" . l:one[i]
+		let l:i = l:i + 1
+	endwhile
+	unlet l:i
+	unlet l:one
+	unlet l:itab
+	unlet l:tab
 	return l:ret
-	"return join(split(join(l:one,"\n"),"}"),"\n}")
 endfunction
 
 

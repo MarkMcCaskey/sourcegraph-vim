@@ -22,6 +22,13 @@ Section 1: Usage			  *SG-VimUsage* *Sourcegraph-VimUsage*
 ==============================================================================
 Section 2: Mappings		    *SG-VimMappings* *Sourcegraph-VimMappings*
 
+The default keybindings are:
+
+,a Sourcegraph_jump_to_definition()
+,o Sourcegraph_describe()
+,e Sourcegraph_usages()
+,u Sourcegraph_search_site()
+
 ==============================================================================
 Section 3: License		      *SG-VimLicense* *Sourcegraph-VimLicense*
 
@@ -31,16 +38,20 @@ Section 4: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
 *SG-VimFish* *Sourcegraph-VimFish*
 Currently, using Fish (The friendly interactive shell) as the default shell
 that Vim uses will cause this plugin to crash.  You can change your the shell
-that Vim will use by adding > 
+that Vim will use by adding 
 set shell=/bin/bash 
-< or > 
+or 
 set shell/bin/sh 
-< to your .vimrc.
+to your .vimrc.
+
+Using Sourcegraph_search_site() inside of a TTY will cause error text to be written over the current Vim session.  You can clear this text by running :redraw!
 
 ==============================================================================
 Section 5: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*
 
+Submit an issue or a pull request!  Checkback for more information later.
+(https://github.com/MarkMcCaskey/sourcegraph-vim)
+
 ==============================================================================
 Section 6: Changelog		  *SG-VimChangelog* *Sourcegraph-VimChangelog*
-
 
