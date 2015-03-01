@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Feb 24 2015
+" Last Change: Mar 1 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -57,10 +57,10 @@ function SG_Keybindings()
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-		:noremap ,a :call Sourcegraph_jump_to_definition()<cr>
-		:noremap ,o :call Sourcegraph_describe()<cr>
-		:noremap ,e :call Sourcegraph_usages()<cr>
-		:noremap ,u :call Sourcegraph_search_site()<cr>
+		noremap ,a :call Sourcegraph_jump_to_definition()<cr>
+		noremap ,o :call Sourcegraph_describe()<cr>
+		noremap ,e :call Sourcegraph_usages()<cr>
+		noremap ,u :call Sourcegraph_search_site()<cr>
 	endif	
 endfunction
 
@@ -96,7 +96,7 @@ function Sourcegraph_call_src( no_examples )
 	if l:output ==? "{}\n"
 		echom "No results found"
 	else
-		:silent vsplit .temp_srclib
+		silent vsplit .temp_srclib
 		normal! ggdG
 		"Consider making an output specific color scheme and highlight 
 		"the buffer
@@ -112,18 +112,15 @@ endfunction
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
 function Sourcegraph_jump_to_definition()
-	:call Sourcegraph_call_src( 1 )
-	:echom "sourcegraph_jump_to_definition"
+	call Sourcegraph_call_src( 1 )
 endfunction
 
 function Sourcegraph_describe()
-	:call Sourcegraph_call_src( 1 )
-	:echom "sourcegraph_describe"
+	call Sourcegraph_call_src( 1 )
 endfunction
 
 function Sourcegraph_usages()
-	:call Sourcegraph_call_src( 1 )
-	:echom "sourcegraph_usages"
+	call Sourcegraph_call_src( 1 )
 endfunction
 
 
@@ -152,17 +149,17 @@ function Sourcegraph_search_site()
 		"TODO: find way to call open
 		":call system( "open " . l:url . " &" )
 	elseif executable( "sensible-browser" ) "debian-based linux
-		:silent execute "!sensible-browser"  l:url . " &"
+		silent execute "!sensible-browser"  l:url . " &"
 	elseif executable( "xdg-open" ) "linux
-		:silent execute "!xdg-open" l:url . " &"
+		silent execute "!xdg-open" l:url . " &"
 	elseif executable( "firefox" )
-		:silent execute "!firefox" l:url
+		silent execute "!firefox" l:url
 	elseif executable( "chromium-browser" ) . " &"
-		:silent execute "!chromium-browser" l:url
+		silent execute "!chromium-browser" l:url
 	else 
 		echom "No browser found, please submit a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endif
-	:redraw!
+	redraw!
 
 	unlet l:search_string
 	unlet l:base_url
@@ -181,7 +178,7 @@ function Get_byte_offset()
 	"added viw so that if called on first letter it stays on the same word
 	execute "normal! mqviwb"
 	let l:retval = line2byte(line("."))+col(".")
-	execute "normal! `q"
+	execute "normal! \<esc>`q"
 	return l:retval
 endfunction
 
@@ -234,4 +231,4 @@ endfunction
 
 
 "'main': 
-:call SG_Keybindings()
+call SG_Keybindings()
