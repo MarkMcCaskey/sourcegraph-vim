@@ -6,6 +6,8 @@
 
 To use this plugin, you must first install [srclib](https://srclib.org).
 
+Your Vim must be complied with `+byte_offset`, to check if your version of Vim has this, run `vim --version | grep +byte_offset`
+
 It is recommended to install this with [pathogen](https://github.com/tpope/vim-pathogen).
 Once pathogen is installed run:
 ```
