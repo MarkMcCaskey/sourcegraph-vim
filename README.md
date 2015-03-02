@@ -22,10 +22,23 @@ If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` t
 
 By default, the keybindings are:
 ```
-,a - Sourcegraph_jump_to_definition()
-,o - Sourcegraph_describe()
-,e - Sourcegraph_usages()
-,u - Sourcegraph_search_site()
+,aa - Sourcegraph_jump_to_definition(0)
+,oo - Sourcegraph_describe(0)
+,ee - Sourcegraph_usages(0)
+,uu - Sourcegraph_search_site()
+,ah - Sourcegraph_jump_to_definition(1)
+,oh - Sourcegraph_describe(1)
+,eh - Sourcegraph_usages(1)
+,al - Sourcegraph_jump_to_definition(2)
+,ol - Sourcegraph_describe(2)
+,el - Sourcegraph_usages(2)
+,aj - Sourcegraph_jump_to_definition(3)
+,oj - Sourcegraph_describe(3)
+,ej - Sourcegraph_usages(3)
+,ak - Sourcegraph_jump_to_definition(4)
+,ok - Sourcegraph_describe(4)
+,ek - Sourcegraph_usages(4)
+
 ```
 (note, these are the keybindings used during development of sourcegraph-vim and may not be convenient on keylayouts other than Dvorak -- they will be changed once the program is closer to being fully functional)
 
@@ -34,10 +47,18 @@ You can prevent these defaults from being loaded by adding `let g:sg_default_key
 
 You can define new keybindings by adding:
 ```
-:noremap <keys> :call Sourcegraph_jump_to_definition()<cr>
-:noremap <keys> :call Sourcegraph_describe()<cr>
-:noremap <keys> :call Sourcegraph_usages()<cr>
+:noremap <keys> :call Sourcegraph_jump_to_definition(0)<cr>
+:noremap <keys> :call Sourcegraph_describe(0)<cr>
+:noremap <keys> :call Sourcegraph_usages(0)<cr>
 :noremap <keys> :call Sourcegraph_search_site()<cr>
+```
+To make direction specific buffer opening, call the above functions with one of the following values:
+```
+0 - use default buffer opening locations
+1 - open to the left
+2 - open to the right
+3 - open below
+4 - open above
 ```
 to your `.vimrc`.
 The control key is `<c-x>` and the alt key is `<a-x>` or `<m-x>` where x is any key.

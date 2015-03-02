@@ -6,7 +6,7 @@
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=003
+let g:sg_vim_loaded=004
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -57,10 +57,22 @@ function SG_Keybindings()
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-		noremap ,a :call Sourcegraph_jump_to_definition()<cr>
-		noremap ,o :call Sourcegraph_describe()<cr>
-		noremap ,e :call Sourcegraph_usages()<cr>
-		noremap ,u :call Sourcegraph_search_site()<cr>
+		noremap ,aa :call Sourcegraph_jump_to_definition(0)<cr>
+		noremap ,oo :call Sourcegraph_describe(0)<cr>
+		noremap ,ee :call Sourcegraph_usages(0)<cr>
+		noremap ,uu :call Sourcegraph_search_site()<cr>
+		noremap ,ah :call Sourcegraph_jump_to_definition(1)<cr>
+		noremap ,oh :call Sourcegraph_describe(1)<cr>
+		noremap ,eh :call Sourcegraph_usages(1)<cr>
+		noremap ,al :call Sourcegraph_jump_to_definition(2)<cr>
+		noremap ,ol :call Sourcegraph_describe(2)<cr>
+		noremap ,el :call Sourcegraph_usages(2)<cr>
+		noremap ,aj :call Sourcegraph_jump_to_definition(3)<cr>
+		noremap ,oj :call Sourcegraph_describe(3)<cr>
+		noremap ,ej :call Sourcegraph_usages(3)<cr>
+		noremap ,ak :call Sourcegraph_jump_to_definition(4)<cr>
+		noremap ,ok :call Sourcegraph_describe(4)<cr>
+		noremap ,ek :call Sourcegraph_usages(4)<cr>
 	endif	
 endfunction
 
@@ -68,17 +80,29 @@ function Disable_SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 0
 	endif
-	unmap ,a
-	unmap ,o
-	unmap ,e
-	unmap ,u
+	unmap ,aa
+	unmap ,oo
+	unmap ,ee
+	unmap ,uu
+	unmap ,ah
+	unmap ,oh
+	unmap ,eh
+	unmap ,aj
+	unmap ,oj
+	unmap ,ej
+	unmap ,ak
+	unmap ,ok
+	unmap ,ek
+	unmap ,al
+	unmap ,ol
+	unmap ,el
 	let g:sg_default_keybindings = 0
 endfunction
 
 "function to be called by jump..., describe, and usages
 "TODO: find a way for system() to run more smoothly (open a background process
 "and run the command there, call a python or perl script, etc.)
-function Sourcegraph_call_src( no_examples )
+function Sourcegraph_call_src( no_examples, buffer_position )
 	let l:sg_no_examples = ""
 	if a:no_examples
 		let l:sg_no_examples = " --no-examples "
@@ -96,7 +120,29 @@ function Sourcegraph_call_src( no_examples )
 	if l:output ==? "{}\n"
 		echom "No results found"
 	else
-		silent vsplit .temp_srclib
+		if a:buffer_position == 0
+			silent vsplit .temp_srclib
+		elseif a:buffer_position == 1
+			let l:temp_split = &splitright
+			let &splitright = 0
+			silent vsplit .temp_srclib
+			let &splitright = l:temp_split
+		elseif a:buffer_position == 2
+			let l:temp_split = &splitright
+			let &splitright = 1
+			silent vsplit .temp_srclib
+			let &splitright = l:temp_split
+		elseif a:buffer_position == 3
+			let l:temp_split = &splitbelow
+			let &splitbelow = 1
+			silent split .temp_srclib
+			let &splitbelow = l:temp_split
+		elseif a:buffer_position == 4
+			let l:temp_split = &splitbelow
+			let &splitbelow = 0
+			silent split .temp_srclib
+			let &splitbelow = l:temp_split
+		endif
 		normal! ggdG
 		"Consider making an output specific color scheme and highlight 
 		"the buffer
@@ -111,16 +157,16 @@ endfunction
 "TODO: parsing and going to relevant information in newly opened buffer
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
-function Sourcegraph_jump_to_definition()
-	call Sourcegraph_call_src( 1 )
+function Sourcegraph_jump_to_definition( buffer_position )
+	call Sourcegraph_call_src( 1, a:buffer_position )
 endfunction
 
-function Sourcegraph_describe()
-	call Sourcegraph_call_src( 1 )
+function Sourcegraph_describe( buffer_position )
+	call Sourcegraph_call_src( 1, a:buffer_position )
 endfunction
 
-function Sourcegraph_usages()
-	call Sourcegraph_call_src( 1 )
+function Sourcegraph_usages( buffer_position )
+	call Sourcegraph_call_src( 1, a:buffer_position )
 endfunction
 
 
