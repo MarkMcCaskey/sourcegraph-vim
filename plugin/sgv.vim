@@ -120,29 +120,35 @@ function Sourcegraph_call_src( no_examples, buffer_position )
 	if l:output ==? "{}\n"
 		echom "No results found"
 	else
+		if !exists("s:temp_buffer")
+			let s:temp_buffer = "_"
+		endif
 		if a:buffer_position == 0
-			silent vsplit .temp_srclib
+			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
 		elseif a:buffer_position == 1
 			let l:temp_split = &splitright
 			let &splitright = 0
-			silent vsplit .temp_srclib
+			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
 			let &splitright = l:temp_split
 		elseif a:buffer_position == 2
 			let l:temp_split = &splitright
 			let &splitright = 1
-			silent vsplit .temp_srclib
+			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
 			let &splitright = l:temp_split
 		elseif a:buffer_position == 3
 			let l:temp_split = &splitbelow
 			let &splitbelow = 1
-			silent split .temp_srclib
+			silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
 			let &splitbelow = l:temp_split
 		elseif a:buffer_position == 4
 			let l:temp_split = &splitbelow
 			let &splitbelow = 0
-			silent split .temp_srclib
+			silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
 			let &splitbelow = l:temp_split
 		endif
+		"temporary fix, find way to reset s:temp_buffer to prevent
+		"excess _'s
+		let s:temp_buffer = s:temp_buffer . "_"
 		normal! ggdG
 		"Consider making an output specific color scheme and highlight 
 		"the buffer
