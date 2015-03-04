@@ -102,8 +102,9 @@ endfunction
 "function to be called by jump..., describe, and usages
 "TODO: find a way for system() to run more smoothly (open a background process
 "and run the command there, call a python or perl script, etc.)
-function Sourcegraph_call_src( no_examples, buffer_position )
+function Sourcegraph_call_src( no_examples )
 	let l:sg_no_examples = ""
+	let l:output = "{}\n"
 	if a:no_examples
 		let l:sg_no_examples = " --no-examples "
 	endif
@@ -117,62 +118,97 @@ function Sourcegraph_call_src( no_examples, buffer_position )
 			\to your .vimrc.  Otherwise, please file a bug report 
 			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
-	if l:output ==? "{}\n"
-		echom "No results found"
-	else
-		if !exists("s:temp_buffer")
-			let s:temp_buffer = "_"
-		endif
-		if a:buffer_position == 0
-			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
-		elseif a:buffer_position == 1
-			let l:temp_split = &splitright
-			let &splitright = 0
-			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
-			let &splitright = l:temp_split
-		elseif a:buffer_position == 2
-			let l:temp_split = &splitright
-			let &splitright = 1
-			silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
-			let &splitright = l:temp_split
-		elseif a:buffer_position == 3
-			let l:temp_split = &splitbelow
-			let &splitbelow = 1
-			silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
-			let &splitbelow = l:temp_split
-		elseif a:buffer_position == 4
-			let l:temp_split = &splitbelow
-			let &splitbelow = 0
-			silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
-			let &splitbelow = l:temp_split
-		endif
-		"temporary fix, find way to reset s:temp_buffer to prevent
-		"excess _'s
-		let s:temp_buffer = s:temp_buffer . "_"
-		normal! ggdG
-		"Consider making an output specific color scheme and highlight 
-		"the buffer
-		setlocal buftype=nofile
-		"echom SG_parse_src(l:output)
-		call append(0,split(SG_parse_src(l:output),"\n"))
-	endif
-	unlet l:output
 	unlet l:sg_no_examples
+	return l:output
+endfunction
+
+function SG_display_JSON( src_input )
+	setlocal buftype=nofile
+	call append(0,split(SG_parse_src(a:src_input),"\n"))
+endfunction
+
+function SG_open_buffer( buffer_position )
+	if !exists("s:temp_buffer")
+		let s:temp_buffer = "_"
+	endif
+	if a:buffer_position == 0
+		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+	elseif a:buffer_position == 1
+		let l:temp_split = &splitright
+		let &splitright = 0
+		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+		let &splitright = l:temp_split
+	elseif a:buffer_position == 2
+		let l:temp_split = &splitright
+		let &splitright = 1
+		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+		let &splitright = l:temp_split
+	elseif a:buffer_position == 3
+		let l:temp_split = &splitbelow
+		let &splitbelow = 1
+		silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
+		let &splitbelow = l:temp_split
+	elseif a:buffer_position == 4
+		let l:temp_split = &splitbelow
+		let &splitbelow = 0
+		silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
+		let &splitbelow = l:temp_split
+	endif
+	"temporary fix, find way to reset s:temp_buffer to prevent
+	"excess _'s
+	let s:temp_buffer = s:temp_buffer . "_"
+	normal! ggdG
+endfunction
+
+"returns a list containing: [location of file, starting byte]
+"NOTE: exact numbers are off, need to cut off comma and the prefix before
+"output is useful
+function SG_jump_info( src_input )
+	let l:ret = []
+	let l:start = strridx( a:src_input, '"File":' )
+	if l:start == -1
+		echom "No results found"
+		return l:ret
+	endif
+	"Start at File: and find the next comma (end of line)
+	let l:end = strridx( a:src_input, ',', l:start )
+	add( l:ret, strpart( a:src_input, l:start, (l:end - l:start)))
+	let l:start = strridx( a:src_input, '"DefStart":' )
+	if l:start == -1 
+		echom "No results found"
+		return l:ret
+	endif
+	let l:end = strridx( a:src_input, ',', l:start )
+	add( l:ret, strpart( a:src_input, l:start, (l:end - l:start)))
+	return ret
 endfunction
 
 "TODO: parsing and going to relevant information in newly opened buffer
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
 function Sourcegraph_jump_to_definition( buffer_position )
-	call Sourcegraph_call_src( 1, a:buffer_position )
+	let l:output = Sourcegraph_call_src( 1 )
+	if l:output ==? "{}\n"
+		echom "No results found"
+	else
+		let l:jump_list = SG_jump_info( l:output )
+		"NOTE: generalize SG_open_buffer()
+		"open a split with file and move cursor to correct position
+	endif
 endfunction
 
 function Sourcegraph_describe( buffer_position )
-	call Sourcegraph_call_src( 1, a:buffer_position )
+	let l:output = Sourcegraph_call_src( 1 )
+	if l:output ==? "{}\n"
+		echom "No results found"
+	else
+		call SG_open_buffer( a:buffer_position )
+		call SG_display_JSON( l:output )
+	endif
 endfunction
 
 function Sourcegraph_usages( buffer_position )
-	call Sourcegraph_call_src( 1, a:buffer_position )
+	call Sourcegraph_call_src( 0 )
 endfunction
 
 
