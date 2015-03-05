@@ -127,31 +127,35 @@ function SG_display_JSON( src_input )
 	call append(0,split(SG_parse_src(a:src_input),"\n"))
 endfunction
 
-function SG_open_buffer( buffer_position )
+function SG_open_buffer( buffer_position, file_name )
+	let l:file_name = a:file_name
 	if !exists("s:temp_buffer")
 		let s:temp_buffer = "_"
 	endif
+	if a:file_name ==? ""
+		let l:file_name = ".temp_srclib" . s:temp_buffer
+	endif
 	if a:buffer_position == 0
-		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+		silent execute "normal! :vsplit " . l:file_name . "\<cr>"
 	elseif a:buffer_position == 1
 		let l:temp_split = &splitright
 		let &splitright = 0
-		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+		silent execute "normal! :vsplit " . l:file_name . "\<cr>"
 		let &splitright = l:temp_split
 	elseif a:buffer_position == 2
 		let l:temp_split = &splitright
 		let &splitright = 1
-		silent execute "normal! :vsplit .temp_srclib" . s:temp_buffer . "\<cr>"
+		silent execute "normal! :vsplit " . l:file_name . "\<cr>"
 		let &splitright = l:temp_split
 	elseif a:buffer_position == 3
 		let l:temp_split = &splitbelow
 		let &splitbelow = 1
-		silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
+		silent execute "normal! :split " . l:file_name . "\<cr>"
 		let &splitbelow = l:temp_split
 	elseif a:buffer_position == 4
 		let l:temp_split = &splitbelow
 		let &splitbelow = 0
-		silent execute "normal! :split .temp_srclib" . s:temp_buffer . "\<cr>"
+		silent execute "normal! :split " .  l:file_name . "\<cr>"
 		let &splitbelow = l:temp_split
 	endif
 	"temporary fix, find way to reset s:temp_buffer to prevent
@@ -165,21 +169,26 @@ endfunction
 "output is useful
 function SG_jump_info( src_input )
 	let l:ret = []
-	let l:start = strridx( a:src_input, '"File":' )
+	let l:start = strridx( a:src_input, '"DefStart":' )
 	if l:start == -1
 		echom "No results found"
 		return l:ret
 	endif
 	"Start at File: and find the next comma (end of line)
 	let l:end = strridx( a:src_input, ',', l:start )
-	add( l:ret, strpart( a:src_input, l:start, (l:end - l:start)))
-	let l:start = strridx( a:src_input, '"DefStart":' )
+	let l:start = strridx( a:src_input, '"File":' )
+	"remove double quotes
+	echo l:end - l:start
+	call add( l:ret, join(filter(split(strpart( a:src_input, l:start+8, (l:end - l:start -2)),'\zs'),'v:val != "')))
+	let l:start = strridx( a:src_input, '"DefEnd":' )
 	if l:start == -1 
 		echom "No results found"
 		return l:ret
 	endif
 	let l:end = strridx( a:src_input, ',', l:start )
-	add( l:ret, strpart( a:src_input, l:start, (l:end - l:start)))
+	let l:start = strridx( a:src_input, '"DefStart":' )
+	call add( l:ret, strpart( a:src_input, l:start + 11, (l:end - l:start -1)))
+	echo l:ret
 	return ret
 endfunction
 
@@ -192,8 +201,13 @@ function Sourcegraph_jump_to_definition( buffer_position )
 		echom "No results found"
 	else
 		let l:jump_list = SG_jump_info( l:output )
-		"NOTE: generalize SG_open_buffer()
+		if len(l:jump_list) != 2
+			echom "No results found -- list too short"
+			return -1
+		endif
 		"open a split with file and move cursor to correct position
+		call SG_open_buffer( a:buffer_position, l:jump_list[0] )
+		execute "normal! " . byte2line( l:jump_list[1] ) . "j\<cr>"
 	endif
 endfunction
 
@@ -202,7 +216,7 @@ function Sourcegraph_describe( buffer_position )
 	if l:output ==? "{}\n"
 		echom "No results found"
 	else
-		call SG_open_buffer( a:buffer_position )
+		call SG_open_buffer( a:buffer_position, "" )
 		call SG_display_JSON( l:output )
 	endif
 endfunction
