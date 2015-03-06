@@ -169,25 +169,20 @@ endfunction
 "output is useful
 function SG_jump_info( src_input )
 	let l:ret = []
-	let l:start = strridx( a:src_input, '"DefStart":' )
-	if l:start == -1
+	let l:temp1 = filter( split( a:src_input, ',' ), 'v:val =~ "\"File\":"')
+	if len(l:temp1) <= 0
 		echom "No results found"
 		return l:ret
 	endif
-	"Start at File: and find the next comma (end of line)
-	let l:end = strridx( a:src_input, ',', l:start )
-	let l:start = strridx( a:src_input, '"File":' )
-	let l:temp1 = strpart( a:src_input, l:start+8, (l:end - l:start -9))
-	call add( l:ret, l:temp1 )
-	"echo l:temp1
-	let l:start = strridx( a:src_input, '"DefEnd":' )
-	if l:start == -1 
-		echom "No results found"
+	let l:temp2 = split(l:temp1[0], '"')[2]
+	call add( l:ret, l:temp2 )
+	let l:temp1 = filter( split( a:src_input, ',' ), 'v:val =~ "\"DefStart\":"')
+	if len(l:temp1) <= 0
+		echom "No results found
 		return l:ret
 	endif
-	let l:end = strridx( a:src_input, ',', l:start )
-	let l:start = strridx( a:src_input, '"DefStart":' )
-	call add( l:ret, strpart( a:src_input, l:start + 11, (l:end - l:start -11)))
+	let l:temp2 = split(l:temp1[0], '":')[1]
+	call add( l:ret, l:temp2 )
 	"echo l:ret
 	return ret
 endfunction
@@ -208,7 +203,7 @@ function Sourcegraph_jump_to_definition( buffer_position )
 		if filereadable(l:jump_list[0])
 			"open a split with file and move cursor to correct position
 			call SG_open_buffer( a:buffer_position, l:jump_list[0] )
-			execute "normal! " . byte2line( l:jump_list[1] ) . "j\<cr>"
+			execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1) . "j\<cr>"
 		else
 			echom "File not found"
 			return -1
