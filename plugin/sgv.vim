@@ -161,7 +161,7 @@ function SG_open_buffer( buffer_position, file_name )
 	"temporary fix, find way to reset s:temp_buffer to prevent
 	"excess _'s
 	let s:temp_buffer = s:temp_buffer . "_"
-	normal! ggdG
+	"normal! ggdG
 endfunction
 
 "returns a list containing: [location of file, starting byte]
@@ -177,9 +177,9 @@ function SG_jump_info( src_input )
 	"Start at File: and find the next comma (end of line)
 	let l:end = strridx( a:src_input, ',', l:start )
 	let l:start = strridx( a:src_input, '"File":' )
-	"remove double quotes
-	echo l:end - l:start
-	call add( l:ret, join(filter(split(strpart( a:src_input, l:start+8, (l:end - l:start -2)),'\zs'),'v:val != "')))
+	let l:temp1 = strpart( a:src_input, l:start+8, (l:end - l:start -9))
+	call add( l:ret, l:temp1 )
+	"echo l:temp1
 	let l:start = strridx( a:src_input, '"DefEnd":' )
 	if l:start == -1 
 		echom "No results found"
@@ -187,8 +187,8 @@ function SG_jump_info( src_input )
 	endif
 	let l:end = strridx( a:src_input, ',', l:start )
 	let l:start = strridx( a:src_input, '"DefStart":' )
-	call add( l:ret, strpart( a:src_input, l:start + 11, (l:end - l:start -1)))
-	echo l:ret
+	call add( l:ret, strpart( a:src_input, l:start + 11, (l:end - l:start -11)))
+	"echo l:ret
 	return ret
 endfunction
 
@@ -205,9 +205,14 @@ function Sourcegraph_jump_to_definition( buffer_position )
 			echom "No results found -- list too short"
 			return -1
 		endif
-		"open a split with file and move cursor to correct position
-		call SG_open_buffer( a:buffer_position, l:jump_list[0] )
-		execute "normal! " . byte2line( l:jump_list[1] ) . "j\<cr>"
+		if filereadable(l:jump_list[0])
+			"open a split with file and move cursor to correct position
+			call SG_open_buffer( a:buffer_position, l:jump_list[0] )
+			execute "normal! " . byte2line( l:jump_list[1] ) . "j\<cr>"
+		else
+			echom "File not found"
+			return -1
+		endif
 	endif
 endfunction
 
