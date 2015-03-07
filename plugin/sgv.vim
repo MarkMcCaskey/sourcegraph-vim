@@ -1,12 +1,12 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 1 2015
+" Last Change: Mar 7 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=004
+let g:sg_vim_loaded=005
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -166,26 +166,13 @@ function SG_open_buffer( buffer_position, file_name )
 endfunction
 
 "returns a list containing: [location of file, starting byte]
-"NOTE: exact numbers are off, need to cut off comma and the prefix before
-"output is useful
 function SG_jump_info( src_input )
-	let l:ret = []
-	let l:temp1 = filter( split( a:src_input, ',' ), 'v:val =~ "\"File\":"')
-	if len(l:temp1) <= 0
+	let l:out = SG_parse_JSON( a:src_input )
+	if ! has_key( l:out, "File" ) || ! has_key( l:out, "DefStart" )
 		echom "No results found"
 		return l:ret
 	endif
-	let l:temp2 = split(l:temp1[0], '"')[2]
-	call add( l:ret, l:temp2 )
-	let l:temp1 = filter( split( a:src_input, ',' ), 'v:val =~ "\"DefStart\":"')
-	if len(l:temp1) <= 0
-		echom "No results found
-		return l:ret
-	endif
-	let l:temp2 = split(l:temp1[0], '":')[1]
-	call add( l:ret, l:temp2 )
-	"echo l:ret
-	return ret
+	return [l:out["File"],l:out["DefStart"]]
 endfunction
 
 function Sourcegraph_show_documentation( buffer_position )
@@ -274,7 +261,7 @@ function Sourcegraph_jump_to_definition( buffer_position )
 		if filereadable(l:jump_list[0])
 			"open a split with file and move cursor to correct position
 			call SG_open_buffer( a:buffer_position, l:jump_list[0] )
-			execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1) . "j\<cr>"
+			execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1) . "jzz\<cr>"
 		else
 			echom "File not found"
 			return -1
