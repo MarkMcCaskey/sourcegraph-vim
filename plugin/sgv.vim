@@ -127,6 +127,7 @@ function SG_display_JSON( src_input )
 	call append(0,split(SG_parse_src(a:src_input),"\n"))
 endfunction
 
+
 function SG_open_buffer( buffer_position, file_name )
 	let l:file_name = a:file_name
 	if !exists("s:temp_buffer")
@@ -186,6 +187,76 @@ function SG_jump_info( src_input )
 	"echo l:ret
 	return ret
 endfunction
+
+function Sourcegraph_show_documentation( buffer_position )
+	"let l:src_output = Sourcegraph_call_src(1)
+	"let l:ret = filter( split( l:src_output, ',' ), 'v:val =~ "\"DocHTML\":"')
+	"if len(l:ret) <= 0
+"		echom "No documentation found"
+"		return -1
+"	endif
+	let l:output = SG_get_JSON_val( "DocHTML" )
+	call SG_open_buffer( a:buffer_position, "" )
+	setlocal buftype=nofile
+	"call append(0, split(l:ret[0], '"')[2])
+	call append(0, l:output)
+	return 1
+endfunction
+
+function SG_get_JSON_val( search_val )
+	 let l:ret = SG_parse_JSON( Sourcegraph_call_src( 1 ) )
+	 if ! has_key( l:ret, a:search_val )
+		 return ""
+	 endif
+	 return l:ret[a:search_val]
+endfunction
+
+function SG_parse_JSON( input_str )
+	let l:inquote = 0
+	let l:multi_backslash = 0
+	let l:prev_char = ""
+	let l:key_name = ""
+	let l:str_val = ""
+	let l:key_or_val = 0
+	let l:list = split( a:input_str, '\zs' )
+	let l:ret = {}
+	for c in l:list
+		"number vals break it, need handling for str_vals without "
+		if l:prev_char ==? '\' && c ==? '\'
+			let l:multi_backslash = 1
+			"continue
+		elseif l:multi_backslash
+			let l:multi_backslash = 0
+			"continue
+		endif
+		if l:prev_char != '\' && c ==? '"'
+			let l:inquote = ! l:inquote
+			continue
+		endif
+
+		if ! l:inquote && c ==? ':'
+			let l:key_or_val = 1
+		endif
+		if l:inquote || c =~ '[0-9]'
+			if ! l:key_or_val
+				let l:key_name = l:key_name . c
+			else
+				let l:str_val = l:str_val . c
+			endif
+		endif
+		if !l:inquote && l:key_or_val && c == ','
+			if l:key_name != "" && l:str_val != ""
+				let l:ret[l:key_name] = l:str_val
+				let l:key_name = ""
+				let l:str_val = ""
+				let l:key_or_val = 0
+			endif
+		endif
+		let l:prev_char = c
+	endfor
+	return l:ret
+endfunction
+
 
 "TODO: parsing and going to relevant information in newly opened buffer
 "Also, consider setting variable or checking if the buffer already exists
