@@ -73,6 +73,11 @@ function SG_Keybindings()
 		noremap ,ak :call Sourcegraph_jump_to_definition(4)<cr>
 		noremap ,ok :call Sourcegraph_describe(4)<cr>
 		noremap ,ek :call Sourcegraph_usages(4)<cr>
+		noremap ,ii :call Sourcegraph_show_documentation(0)<cr>
+		noremap ,ih :call Sourcegraph_show_documentation(1)<cr>
+		noremap ,il :call Sourcegraph_show_documentation(2)<cr>
+		noremap ,ij :call Sourcegraph_show_documentation(3)<cr>
+		noremap ,ik :call Sourcegraph_show_documentation(4)<cr>
 	endif	
 endfunction
 
@@ -96,6 +101,11 @@ function Disable_SG_Keybindings()
 	unmap ,al
 	unmap ,ol
 	unmap ,el
+	unmap ,ii
+	unmap ,ih
+	unmap ,ij
+	unmap ,ik
+	unmap ,il
 	let g:sg_default_keybindings = 0
 endfunction
 
@@ -176,22 +186,20 @@ function SG_jump_info( src_input )
 endfunction
 
 function Sourcegraph_show_documentation( buffer_position )
-	"let l:src_output = Sourcegraph_call_src(1)
-	"let l:ret = filter( split( l:src_output, ',' ), 'v:val =~ "\"DocHTML\":"')
-	"if len(l:ret) <= 0
-"		echom "No documentation found"
-"		return -1
-"	endif
-	let l:output = SG_get_JSON_val( "DocHTML" )
+	let l:output = SG_get_JSON_val( "DocHTML", 1 )
+	if l:output ==? ""
+		echom "No documentation found"
+		return -1
+	endif
 	call SG_open_buffer( a:buffer_position, "" )
 	setlocal buftype=nofile
-	"call append(0, split(l:ret[0], '"')[2])
-	call append(0, l:output)
+	let l:ret =split(l:output, '\\n')
+	call append(0, l:ret)
 	return 1
 endfunction
 
-function SG_get_JSON_val( search_val )
-	 let l:ret = SG_parse_JSON( Sourcegraph_call_src( 1 ) )
+function SG_get_JSON_val( search_val, examples )
+	 let l:ret = SG_parse_JSON( Sourcegraph_call_src( a:examples ) )
 	 if ! has_key( l:ret, a:search_val )
 		 return ""
 	 endif
@@ -280,7 +288,13 @@ function Sourcegraph_describe( buffer_position )
 endfunction
 
 function Sourcegraph_usages( buffer_position )
-	call Sourcegraph_call_src( 0 )
+	"let l:output = SG_parse_JSON( Sourcegraph_call_src(0) )
+	"if l:output ==? {} || ! has_key( l:output, "Examples" )
+"		echom "No results found"
+"		return -1
+"	endif
+"	call SG_open_buffer( a:buffer_position, "" )
+	echom "Usages not yet implemented!"
 endfunction
 
 

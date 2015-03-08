@@ -38,6 +38,11 @@ By default, the keybindings are:
 ,ak - Sourcegraph_jump_to_definition(4)
 ,ok - Sourcegraph_describe(4)
 ,ek - Sourcegraph_usages(4)
+,ii - Sourcegraph_show_documentation(0)
+,ih - Sourcegraph_show_documentation(1)
+,il - Sourcegraph_show_documentation(2)
+,ij - Sourcegraph_show_documentation(3)
+,ik - Sourcegraph_show_documentation(4)
 
 ```
 (note, these are the keybindings used during development of sourcegraph-vim and may not be convenient on keylayouts other than Dvorak -- they will be changed once the program is closer to being fully functional)
@@ -51,6 +56,7 @@ You can define new keybindings by adding:
 :noremap <keys> :call Sourcegraph_describe(0)<cr>
 :noremap <keys> :call Sourcegraph_usages(0)<cr>
 :noremap <keys> :call Sourcegraph_search_site()<cr>
+:noremap <keys> :call Sourcegraph_show_documentation(0)<cr>
 ```
 To make direction specific buffer opening, call the above functions with one of the following values:
 ```
@@ -75,3 +81,5 @@ For example:
 :help Sourcegraph-VimLicense
 :help SG-VimContents
 ```
+
+Currently the `usages` function is not implemented and the output of `describe` is poorly formatted, this will be fixed soon.
