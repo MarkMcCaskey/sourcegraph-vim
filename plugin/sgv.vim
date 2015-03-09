@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 7 2015
+" Last Change: Mar 8 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -16,11 +16,36 @@ if !executable( "src" )
 	finish
 endif
 
+"&filetype is empty until after plugin is loaded
+"trying to read bufname("%") doesn't work either
+"Maybe autoloading the plugin can fix this?
+"More research and testing needs to be done
+function Supported_file()
+	let l:list = system("src toolchain list")
+	"let l:ft_list = split(string(bufname("%")), '.')
+	"let l:ft_len = len(l:ft_list)
+	"let l:filetype = l:ft_list[l:ft_len]
+
+	for c in s:supported_languages
+		echo "FILETYPE IS " . &filetype
+		echo "FILE NAME IS" . bufname("%")
+		if &filetype ==? c
+			if l:list =~ "sourcegraph.com/sourcegraph/srclib-" . &filetype
+				echom "FILE MATCHED SRC OUTPUT"
+				return 1
+			endif
+			echom "FILE DID NOT MATCH SRC OUTPUT"
+			echom "This language is supported, but you do not have it installed"
+		endif
+	endfor
+	return 0
+endfunction
+
 "close plugin if editing a file not currently supported
 "DISABLED FOR TESTING PURPOSES
-""if ! Supported_file()
-""       finish
-""endif       
+"if ! Supported_file()
+"       finish
+"endif       
 
 "This function can be used to get a list of currently supported languages
 "so that this plugin only runs when editing supported files
@@ -340,14 +365,8 @@ function Sourcegraph_search_site()
 	unlet l:url
 endfunction
 	
-"TODO: add check for support on local machine by calling 'src toolchain list'
-function Supported_file()
-	if index( s:supported_languages, &filetype ) != -1
-		return 1
-	endif
-	return 0
-endfunction
 
+"Returns the byte of the first letter of the word the cursor is on
 function Get_byte_offset()
 	"added viw so that if called on first letter it stays on the same word
 	execute "normal! mqviwb"
@@ -356,6 +375,8 @@ function Get_byte_offset()
 	return l:retval
 endfunction
 
+
+"Note this function just formats src output, needs to be renamed
 function SG_parse_src( in )
 	let l:tab = "   "
 	let l:itab = 0
