@@ -16,11 +16,11 @@ git clone https://github.com/MarkMcCaskey/sourcegraph-vim.git
 ```
 **NOTE**
 
-If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` to your `.vimrc`.  Vim will throw an error when trying to run certain commands through fish.
+If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` to your `.vimrc`.  Vim will throw an error when trying to run certain commands through Fish.
 
 ## Keybindings
 
-By default, the keybindings are:
+The default keybindings are:
 ```
 ,aa - Sourcegraph_jump_to_definition(0)
 ,oo - Sourcegraph_describe(0)
@@ -74,7 +74,7 @@ Due to the way Vim handles keybindings by level of specificity, trying to map th
 ## Help
 
 To read the documentation type `:help SG-Vim`.
-The general style of the tags is to capitalize the first letter of all words and prefix all Sourcegraph-Vim specific help documentation with `SG-Vim` or `Sourcegraph-Vim`.
+The general style of the tags is to capitalize the first letter of all words and prefix all Sourcegraph-Vim specific help documentation with either `SG-Vim` or `Sourcegraph-Vim`.
 For example:
 ```
 :help SG-VimUsages

@@ -197,7 +197,6 @@ endfunction
 
 function SG_parse_JSON( input_str )
 	let l:inquote = 0
-	let l:multi_backslash = 0
 	let l:prev_char = ""
 	let l:key_name = ""
 	let l:str_val = ""
@@ -205,13 +204,12 @@ function SG_parse_JSON( input_str )
 	let l:list = split( a:input_str, '\zs' )
 	let l:ret = {}
 	for c in l:list
-		"number vals break it, need handling for str_vals without "
-		if l:prev_char ==? '\' && c ==? '\'
-			let l:multi_backslash = 1
-			"continue
-		elseif l:multi_backslash
-			let l:multi_backslash = 0
-			"continue
+		if c ==? '\'
+			l:prev_char = c
+			continue
+		endif
+		if l:prev_char ==? '\'
+			silent execute "normal! :let c = " . '"\' . c . "\"\<cr>"
 		endif
 		if l:prev_char != '\' && c ==? '"'
 			let l:inquote = ! l:inquote
