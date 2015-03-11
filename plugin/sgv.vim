@@ -169,7 +169,7 @@ function SG_jump_info( src_input )
 	let l:out = SG_parse_JSON( a:src_input )
 	if ! has_key( l:out, "File" ) || ! has_key( l:out, "DefStart" )
 		echom "No results found"
-		return l:ret
+		return []
 	endif
 	return [l:out["File"],l:out["DefStart"]]
 endfunction
@@ -205,7 +205,7 @@ function SG_parse_JSON( input_str )
 	let l:ret = {}
 	for c in l:list
 		if c ==? '\'
-			l:prev_char = c
+			let l:prev_char = c
 			continue
 		endif
 		if l:prev_char ==? '\'
