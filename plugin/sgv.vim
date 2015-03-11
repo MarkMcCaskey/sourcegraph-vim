@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 8 2015
+" Last Change: Mar 10 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -41,36 +41,6 @@ endfunction
 if ! Supported_file()
        finish
 endif       
-
-"This function can be used to get a list of currently supported languages
-"so that this plugin only runs when editing supported files
-"
-"this function currently doesn't work
-function SetLangVars()
-	let s:src_temp = system( "src toolchain list" )
-	let s:src_tool_list = split( s:src_temp )
-	unlet s:src_temp
-	let l:i = 0
-	let l:base_url = "sourcegraph.com/sourcegraph/srclib-"
-
-	while l:i < len(s:src_tool_list)
-		let l:j = 0
-		while j < len(s:supported_languages)
-			if s:src_tool_list[l:i] == l:base_url . s:supported_languges[l:j]
-				if(!exists "s:" . s:supported_languages[l:j])
-					execute "normal! let " . s:supported_languages[l:j] . " = 1"
-				endif
-			endif
-			let l:j += 1
-		endwhile
-		let l:i += 1
-		unlet l:j
-	endwhile
-
-	unlet l:i
-	unlet s:src_tool_list
-	unlet l:base_url
-endfunction
 
 function SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
@@ -148,7 +118,6 @@ function Sourcegraph_call_src( no_examples )
 			\to your .vimrc.  Otherwise, please file a bug report 
 			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
-	unlet l:sg_no_examples
 	return l:output
 endfunction
 
@@ -277,11 +246,11 @@ endfunction
 "Also, consider setting variable or checking if the buffer already exists
 "before opening new ones
 function Sourcegraph_jump_to_definition( buffer_position )
-	let l:output = Sourcegraph_call_src( 1 )
-	if l:output ==? "{}\n"
+	let l:src_output = Sourcegraph_call_src( 1 )
+	if l:src_output ==? "{}\n"
 		echom "No results found"
 	else
-		let l:jump_list = SG_jump_info( l:output )
+		let l:jump_list = SG_jump_info( l:src_output )
 		if len(l:jump_list) != 2
 			echom "No results found -- list too short"
 			return -1
@@ -298,12 +267,12 @@ function Sourcegraph_jump_to_definition( buffer_position )
 endfunction
 
 function Sourcegraph_describe( buffer_position )
-	let l:output = Sourcegraph_call_src( 1 )
-	if l:output ==? "{}\n"
+	let l:src_output = Sourcegraph_call_src( 1 )
+	if l:src_output ==? "{}\n"
 		echom "No results found"
 	else
 		call SG_open_buffer( a:buffer_position, "" )
-		call SG_display_JSON( l:output )
+		call SG_display_JSON( l:src_output )
 	endif
 endfunction
 
@@ -352,12 +321,10 @@ function Sourcegraph_search_site()
 		silent execute "!chromium-browser" l:url
 	else 
 		echom "No browser found, please submit a bug report at https://github.com/MarkMcCaskey/sourcegraph-vim"
+		return 0
 	endif
 	redraw!
-
-	unlet l:search_string
-	unlet l:base_url
-	unlet l:url
+	return 1
 endfunction
 	
 
@@ -372,6 +339,8 @@ endfunction
 
 
 "Note this function just formats src output, needs to be renamed
+"This function needs to be redone, method of indentation doesn't work on large
+"files and is hard to maintain
 function SG_parse_src( in )
 	let l:tab = "   "
 	let l:itab = 0
@@ -412,10 +381,6 @@ function SG_parse_src( in )
 		let l:ret = l:ret . "\n" . l:tabulator . "}" . l:one[i]
 		let l:i = l:i + 1
 	endwhile
-	unlet l:i
-	unlet l:one
-	unlet l:itab
-	unlet l:tab
 	return l:ret
 endfunction
 
