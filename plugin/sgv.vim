@@ -17,35 +17,30 @@ if !executable( "src" )
 endif
 
 "&filetype is empty until after plugin is loaded
-"trying to read bufname("%") doesn't work either
 "Maybe autoloading the plugin can fix this?
 "More research and testing needs to be done
+"Current implementation requires a dot before the extension
 function Supported_file()
-	let l:list = system("src toolchain list")
-	"let l:ft_list = split(string(bufname("%")), '.')
-	"let l:ft_len = len(l:ft_list)
-	"let l:filetype = l:ft_list[l:ft_len]
+	let l:src_out = system("src toolchain list")
+
+	let l:ft_list = split(bufname("%"), "\\.")
+	let l:ft = l:ft_list[len(l:ft_list)-1]
 
 	for c in s:supported_languages
-		echo "FILETYPE IS " . &filetype
-		echo "FILE NAME IS" . bufname("%")
-		if &filetype ==? c
-			if l:list =~ "sourcegraph.com/sourcegraph/srclib-" . &filetype
-				echom "FILE MATCHED SRC OUTPUT"
+		if l:ft ==? c
+			if l:src_out =~ "sourcegraph.com/sourcegraph/srclib-" . l:ft
 				return 1
 			endif
-			echom "FILE DID NOT MATCH SRC OUTPUT"
-			echom "This language is supported, but you do not have it installed"
+			silent echom "This language is supported by src, but you do not have it installed"
 		endif
 	endfor
 	return 0
 endfunction
 
 "close plugin if editing a file not currently supported
-"DISABLED FOR TESTING PURPOSES
-"if ! Supported_file()
-"       finish
-"endif       
+if ! Supported_file()
+       finish
+endif       
 
 "This function can be used to get a list of currently supported languages
 "so that this plugin only runs when editing supported files
