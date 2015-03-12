@@ -36,11 +36,11 @@ You can prevent these defaults from being loaded by adding `let g:sg_default_key
 
 You can define new keybindings by adding:
 ```
-:noremap <keys> :call Sourcegraph_jump_to_definition(0)<cr>
-:noremap <keys> :call Sourcegraph_describe(0)<cr>
-:noremap <keys> :call Sourcegraph_usages(0)<cr>
-:noremap <keys> :call Sourcegraph_search_site()<cr>
-:noremap <keys> :call Sourcegraph_show_documentation(0)<cr>
+:noremap <silent> <keys> :call Sourcegraph_jump_to_definition(0)<cr>
+:noremap <silent> <keys> :call Sourcegraph_describe(0)<cr>
+:noremap <silent> <keys> :call Sourcegraph_usages(0)<cr>
+:noremap <silent> <keys> :call Sourcegraph_search_site()<cr>
+:noremap <silent> <keys> :call Sourcegraph_show_documentation(0)<cr>
 ```
 To make direction specific buffer opening, call the above functions with one of the following values:
 ```
