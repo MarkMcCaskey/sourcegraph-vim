@@ -25,7 +25,7 @@ The default keybindings are:
 ,a - Sourcegraph_jump_to_definition()
 ,oo - Sourcegraph_describe(0)
 ,ee - Sourcegraph_usages(0)
-,uu - Sourcegraph_search_site()
+,u - Sourcegraph_search_site()
 ,oh - Sourcegraph_describe(1)
 ,eh - Sourcegraph_usages(1)
 ,ol - Sourcegraph_describe(2)

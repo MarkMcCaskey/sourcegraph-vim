@@ -50,7 +50,7 @@ function SG_Keybindings()
 		noremap ,a :call Sourcegraph_jump_to_definition()<cr>
 		noremap ,oo :call Sourcegraph_describe(0)<cr>
 		noremap ,ee :call Sourcegraph_usages(0)<cr>
-		noremap ,uu :call Sourcegraph_search_site()<cr>
+		noremap ,u :call Sourcegraph_search_site()<cr>
 		noremap ,oh :call Sourcegraph_describe(1)<cr>
 		noremap ,eh :call Sourcegraph_usages(1)<cr>
 		noremap ,ol :call Sourcegraph_describe(2)<cr>
@@ -291,8 +291,14 @@ function Sourcegraph_search_site()
 		"set search_string to word under the cursor
 		execute "normal! mqviw\"ay`q"
 	endif
-	let l:search_string = @a
+	let l:path = SG_get_JSON_val("Unit",0)
+	if l:path ==? ""
+		echom "No results found"
+		return -1
+	endif
+	let l:search_string = l:path . '+' . @a
 
+	echom l:search_string
 
 	"try opening with browser
 	"TODO: find better way to open in the background
