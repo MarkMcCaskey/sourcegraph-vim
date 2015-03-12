@@ -47,20 +47,16 @@ function SG_Keybindings()
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-		noremap ,aa :call Sourcegraph_jump_to_definition(0)<cr>
+		noremap ,a :call Sourcegraph_jump_to_definition()<cr>
 		noremap ,oo :call Sourcegraph_describe(0)<cr>
 		noremap ,ee :call Sourcegraph_usages(0)<cr>
 		noremap ,uu :call Sourcegraph_search_site()<cr>
-		noremap ,ah :call Sourcegraph_jump_to_definition(1)<cr>
 		noremap ,oh :call Sourcegraph_describe(1)<cr>
 		noremap ,eh :call Sourcegraph_usages(1)<cr>
-		noremap ,al :call Sourcegraph_jump_to_definition(2)<cr>
 		noremap ,ol :call Sourcegraph_describe(2)<cr>
 		noremap ,el :call Sourcegraph_usages(2)<cr>
-		noremap ,aj :call Sourcegraph_jump_to_definition(3)<cr>
 		noremap ,oj :call Sourcegraph_describe(3)<cr>
 		noremap ,ej :call Sourcegraph_usages(3)<cr>
-		noremap ,ak :call Sourcegraph_jump_to_definition(4)<cr>
 		noremap ,ok :call Sourcegraph_describe(4)<cr>
 		noremap ,ek :call Sourcegraph_usages(4)<cr>
 		noremap ,ii :call Sourcegraph_show_documentation(0)<cr>
@@ -240,22 +236,18 @@ function SG_parse_JSON( input_str )
 endfunction
 
 
-"TODO: parsing and going to relevant information in newly opened buffer
-"Also, consider setting variable or checking if the buffer already exists
-"before opening new ones
-function Sourcegraph_jump_to_definition( buffer_position )
+function Sourcegraph_jump_to_definition()
 	let l:src_output = Sourcegraph_call_src( 1 )
 	if l:src_output ==? "{}\n"
 		echom "No results found"
 	else
 		let l:jump_list = SG_jump_info( l:src_output )
 		if len(l:jump_list) != 2
-			echom "No results found -- list too short"
 			return -1
 		endif
 		if filereadable(l:jump_list[0])
 			"open a split with file and move cursor to correct position
-			call SG_open_buffer( a:buffer_position, l:jump_list[0] )
+			execute "normal! :edit " . l:jump_list[0] . "\<cr>"
 			execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1) . "jzz\<cr>"
 		else
 			echom "File not found"

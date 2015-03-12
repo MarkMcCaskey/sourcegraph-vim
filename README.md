@@ -22,20 +22,16 @@ If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` t
 
 The default keybindings are:
 ```
-,aa - Sourcegraph_jump_to_definition(0)
+,a - Sourcegraph_jump_to_definition()
 ,oo - Sourcegraph_describe(0)
 ,ee - Sourcegraph_usages(0)
 ,uu - Sourcegraph_search_site()
-,ah - Sourcegraph_jump_to_definition(1)
 ,oh - Sourcegraph_describe(1)
 ,eh - Sourcegraph_usages(1)
-,al - Sourcegraph_jump_to_definition(2)
 ,ol - Sourcegraph_describe(2)
 ,el - Sourcegraph_usages(2)
-,aj - Sourcegraph_jump_to_definition(3)
 ,oj - Sourcegraph_describe(3)
 ,ej - Sourcegraph_usages(3)
-,ak - Sourcegraph_jump_to_definition(4)
 ,ok - Sourcegraph_describe(4)
 ,ek - Sourcegraph_usages(4)
 ,ii - Sourcegraph_show_documentation(0)
