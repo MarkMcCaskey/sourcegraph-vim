@@ -42,6 +42,29 @@ The default keybindings are:
 ,ij - Sourcegraph_show_documentation(3)
 ,ik - Sourcegraph_show_documentation(4)
 
+You can prevent these defaults from being loaded by adding let g:sg_default_keybindings = 0 to your .vimrc.
+
+You can define new keybindings by adding:
+
+:noremap <keys> :call Sourcegraph_jump_to_definition(0)<cr>
+:noremap <keys> :call Sourcegraph_describe(0)<cr>
+:noremap <keys> :call Sourcegraph_usages(0)<cr>
+:noremap <keys> :call Sourcegraph_search_site()<cr>
+:noremap <keys> :call Sourcegraph_show_documentation(0)<cr>
+
+To make direction specific buffer opening, call the above functions with one of the following values:
+
+0 - use default buffer opening locations
+1 - open to the left
+2 - open to the right
+3 - open below
+4 - open above
+
+to your `.vimrc`.
+The control key is `<c-x>` and the alt key is `<a-x>` or `<m-x>` where x is any key.
+Due to the way Vim handles keybindings by level of specificity, trying to map these over existing keybindings may cause problems.
+
+
 ==============================================================================
 Section 3: License		      *SG-VimLicense* *Sourcegraph-VimLicense*
 
