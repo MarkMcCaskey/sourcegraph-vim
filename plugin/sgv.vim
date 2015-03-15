@@ -1,12 +1,12 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 10 2015
+" Last Change: Mar 14 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=005
+let g:sg_vim_loaded=6
 
 "consider reading from configuration file
 let s:supported_languages=["go","python","java","nodejs","ruby"]
@@ -235,7 +235,6 @@ function SG_parse_JSON( input_str )
 	return l:ret
 endfunction
 
-
 function Sourcegraph_jump_to_definition()
 	let l:src_output = Sourcegraph_call_src( 1 )
 	if l:src_output ==? "{}\n"
@@ -267,13 +266,23 @@ function Sourcegraph_describe( buffer_position )
 endfunction
 
 function Sourcegraph_usages( buffer_position )
-	"let l:output = SG_parse_JSON( Sourcegraph_call_src(0) )
-	"if l:output ==? {} || ! has_key( l:output, "Examples" )
-"		echom "No results found"
-"		return -1
-"	endif
-"	call SG_open_buffer( a:buffer_position, "" )
+	let l:output = SG_parse_JSON_exp( Sourcegraph_call_src(0))
+	if l:output ==? {} || ! has_key( l:output, "Examples" )
+		echom "No results found"
+		return -1
+	endif
+	"call SG_open_buffer( a:buffer_position, "" )
+	"call append(0,l:output["Examples"])
 	echom "Usages not yet implemented!"
+endfunction
+
+"experimental parse JSON function
+function SG_parse_JSON_exp( input )
+	let l:ret = join(split(a:input,'true'),'1')
+	let l:ret = join(split(l:ret,'false'),'0')
+	let l:ret = join(split(l:ret,'null'),0)
+	silent execute "normal! :let l:retl = " . l:ret . "\<cr>"
+	return l:retl
 endfunction
 
 
@@ -307,6 +316,7 @@ function Sourcegraph_search_site()
 		"open is a keyword in VimL
 		"TODO: find way to call open
 		":call system( "open " . l:url . " &" )
+		silent execute "!open " l:url . " &"
 	elseif executable( "sensible-browser" ) "debian-based linux
 		silent execute "!sensible-browser"  l:url . " &"
 	elseif executable( "xdg-open" ) "linux
@@ -337,6 +347,7 @@ endfunction
 "Note this function just formats src output, needs to be renamed
 "This function needs to be redone, method of indentation doesn't work on large
 "files and is hard to maintain
+"NOTE: src fmt replaces this
 function SG_parse_src( in )
 	let l:tab = "   "
 	let l:itab = 0
