@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 14 2015
+" Last Change: Mar 15 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -9,7 +9,7 @@ endif
 let g:sg_vim_loaded=6
 
 "consider reading from configuration file
-let s:supported_languages=["go","python","java","nodejs","ruby"]
+let s:supported_languages={"go": "go","py": "python","java": "java","js": "nodejs","rb": "ruby"}
 
 if !executable( "src" ) 
 	echom "src(https://srclib.org/) is required to use this plugin"
@@ -26,14 +26,12 @@ function Supported_file()
 	let l:ft_list = split(bufname("%"), "\\.")
 	let l:ft = l:ft_list[len(l:ft_list)-1]
 
-	for c in s:supported_languages
-		if l:ft ==? c
-			if l:src_out =~ "sourcegraph.com/sourcegraph/srclib-" . l:ft
+	if has_key(s:supported_languages,l:ft)
+		if l:src_out =~ "sourcegraph.com/sourcegraph/srclib-" . s:supported_languages[l:ft]
 				return 1
-			endif
-			silent echom "This language is supported by src, but you do not have it installed"
 		endif
-	endfor
+		silent echom "This language is supported by src, but you do not have it installed"
+	endif
 	return 0
 endfunction
 
@@ -271,8 +269,8 @@ function Sourcegraph_usages( buffer_position )
 		echom "No results found"
 		return -1
 	endif
-	"call SG_open_buffer( a:buffer_position, "" )
-	"call append(0,l:output["Examples"])
+	call SG_open_buffer( a:buffer_position, "" )
+	call append(0,l:output["Examples"])
 	echom "Usages not yet implemented!"
 endfunction
 
