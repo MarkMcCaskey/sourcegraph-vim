@@ -22,7 +22,9 @@ endif
 "Current implementation requires a dot before the extension
 function Supported_file()
 	let l:src_out = system("src toolchain list")
-
+	if bufname("%") ==? ""
+		return 0
+	endif
 	let l:ft_list = split(bufname("%"), "\\.")
 	let l:ft = l:ft_list[len(l:ft_list)-1]
 
@@ -254,13 +256,18 @@ function Sourcegraph_jump_to_definition()
 endfunction
 
 function Sourcegraph_describe( buffer_position )
-	let l:src_output = Sourcegraph_call_src( 1 )
-	if l:src_output ==? "{}\n"
+	let l:raw_src_output = Sourcegraph_call_src( 0 )
+	let l:src_output = SG_parse_JSON( l:raw_src_output )
+	echo l:raw_src_output
+	echo l:src_output
+	if ! has_key( l:src_output, "UnitType" ) 
 		echom "No results found"
-	else
-		call SG_open_buffer( a:buffer_position, "" )
-		call SG_display_JSON( l:src_output )
+		return -1
 	endif
+	let l:unit = l:src_output["UnitType"]
+	call sg_open_buffer( a:buffer_position, "" )
+	let l:out = system("src fmt -u " . l:unit . " --object=" . l:raw_src_output )
+	call append(0,l:out)
 endfunction
 
 function Sourcegraph_usages( buffer_position )
