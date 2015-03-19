@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 15 2015
+" Last Change: Mar 18 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -163,7 +163,7 @@ endfunction
 "returns a list containing: [location of file, starting byte]
 function SG_jump_info( src_input )
 	let l:out = SG_parse_JSON( a:src_input )
-	if ! has_key( l:out, "File" ) || ! has_key( l:out, "DefStart" )
+	if ! (has_key( l:out, "File" ) && has_key( l:out, "DefStart" ))
 		echom "No results found"
 		return []
 	endif
@@ -257,16 +257,20 @@ endfunction
 
 function Sourcegraph_describe( buffer_position )
 	let l:raw_src_output = Sourcegraph_call_src( 0 )
-	let l:src_output = SG_parse_JSON( l:raw_src_output )
-	echo l:raw_src_output
-	echo l:src_output
-	if ! has_key( l:src_output, "UnitType" ) 
+	let l:src_output = SG_parse_JSON_exp( l:raw_src_output )
+	if ! has_key( l:src_output, "Def" )
 		echom "No results found"
 		return -1
 	endif
-	let l:unit = l:src_output["UnitType"]
-	call sg_open_buffer( a:buffer_position, "" )
-	let l:out = system("src fmt -u " . l:unit . " --object=" . l:raw_src_output )
+	if ! has_key( l:src_output["Def"], "UnitType" ) 
+		echom "No results found"
+		return -1
+	endif
+	echom string(l:src_output)
+	let l:unit = l:src_output["Def"]["UnitType"]
+	call SG_open_buffer( a:buffer_position, "" )
+	"temporarily add -t def
+	let l:out = system("src fmt -u " . l:unit . " --object-type='Def' " . " --object=" . l:raw_src_output )
 	call append(0,l:out)
 endfunction
 
