@@ -270,19 +270,21 @@ function Sourcegraph_describe( buffer_position )
 	let l:unit = l:src_output["Def"]["UnitType"]
 	call SG_open_buffer( a:buffer_position, "" )
 	"temporarily add -t def
-	let l:out = system("src fmt -u " . l:unit . " --object-type='Def' " . " --object=" . l:raw_src_output )
+	let l:out = system("src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output )
 	call append(0,l:out)
+	return 1
 endfunction
 
 function Sourcegraph_usages( buffer_position )
 	let l:output = SG_parse_JSON_exp( Sourcegraph_call_src(0))
-	if l:output ==? {} || ! has_key( l:output, "Examples" )
+	if l:output ==? {} || ! has_key( l:output, "Examples" ) || empty(l:output["Examples"])
 		echom "No results found"
 		return -1
 	endif
 	call SG_open_buffer( a:buffer_position, "" )
-	call append(0,l:output["Examples"])
-	echom "Usages not yet implemented!"
+	"need to parse the output
+	call append(0,join(l:output["Examples"],'\n'))
+	return 1
 endfunction
 
 "experimental parse JSON function
