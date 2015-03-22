@@ -22,15 +22,12 @@ If your default shell is Fish add `set shell=/bin/bash` or `set shell=/bin/sh` t
 
 The default keybindings are:
 ```
-,a - Sourcegraph_jump_to_definition
-,o(o,h,j,k,l) - Sourcegraph_describe
-,e(e,h,j,k,l) - Sourcegraph_usages
-,u - Sourcegraph_search_site
-,i(i,h,j,k,l) - Sourcegraph_show_documentation
+;a - Sourcegraph_jump_to_definition
+;s(s,h,j,k,l) - Sourcegraph_describe
+;d(d,h,j,k,l) - Sourcegraph_usages
+;f - Sourcegraph_search_site
+;g(g,h,j,k,l) - Sourcegraph_show_documentation
 ```
-
-(note, these are the keybindings used during development of sourcegraph-vim and may not be convenient on keylayouts other than Dvorak -- they will be changed once the program is closer to being fully functional)
-
 
 You can prevent these defaults from being loaded by adding `let g:sg_default_keybindings = 0` to your `.vimrc`.
 

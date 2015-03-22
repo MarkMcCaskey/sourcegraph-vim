@@ -23,24 +23,23 @@ Section 1: Usage			  *SG-VimUsage* *Sourcegraph-VimUsage*
 Section 2: Mappings		    *SG-VimMappings* *Sourcegraph-VimMappings*
 
 The default keybindings are:
-
-,a - Sourcegraph_jump_to_definition()
-,oo - Sourcegraph_describe(0)
-,ee - Sourcegraph_usages(0)
-,u - Sourcegraph_search_site()
-,oh - Sourcegraph_describe(1)
-,eh - Sourcegraph_usages(1)
-,ol - Sourcegraph_describe(2)
-,el - Sourcegraph_usages(2)
-,oj - Sourcegraph_describe(3)
-,ej - Sourcegraph_usages(3)
-,ok - Sourcegraph_describe(4)
-,ek - Sourcegraph_usages(4)
-,ii - Sourcegraph_show_documentation(0)
-,ih - Sourcegraph_show_documentation(1)
-,il - Sourcegraph_show_documentation(2)
-,ij - Sourcegraph_show_documentation(3)
-,ik - Sourcegraph_show_documentation(4)
+;a  :call Sourcegraph_jump_to_definition()<cr>
+;ss :call Sourcegraph_describe(0)<cr>
+;dd :call Sourcegraph_usages(0)<cr>
+;f  :call Sourcegraph_search_site()<cr>
+;sh :call Sourcegraph_describe(1)<cr>
+;dh :call Sourcegraph_usages(1)<cr>
+;sl :call Sourcegraph_describe(2)<cr>
+;dl :call Sourcegraph_usages(2)<cr>
+;sj :call Sourcegraph_describe(3)<cr>
+;dj :call Sourcegraph_usages(3)<cr>
+;sk :call Sourcegraph_describe(4)<cr>
+;dk :call Sourcegraph_usages(4)<cr>
+;gg :call Sourcegraph_show_documentation(0)<cr>
+;gh :call Sourcegraph_show_documentation(1)<cr>
+;gl :call Sourcegraph_show_documentation(2)<cr>
+;gj :call Sourcegraph_show_documentation(3)<cr>
+;gk :call Sourcegraph_show_documentation(4)<cr>
 
 You can prevent these defaults from being loaded by adding let g:sg_default_keybindings = 0 to your .vimrc.
 

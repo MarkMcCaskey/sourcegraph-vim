@@ -47,23 +47,23 @@ function SG_Keybindings()
 		let g:sg_default_keybindings = 1
 	endif
 	if g:sg_default_keybindings 
-		noremap <silent> ,a :call Sourcegraph_jump_to_definition()<cr>
-		noremap <silent> ,oo :call Sourcegraph_describe(0)<cr>
-		noremap <silent> ,ee :call Sourcegraph_usages(0)<cr>
-		noremap <silent> ,u :call Sourcegraph_search_site()<cr>
-		noremap <silent> ,oh :call Sourcegraph_describe(1)<cr>
-		noremap <silent> ,eh :call Sourcegraph_usages(1)<cr>
-		noremap <silent> ,ol :call Sourcegraph_describe(2)<cr>
-		noremap <silent> ,el :call Sourcegraph_usages(2)<cr>
-		noremap <silent> ,oj :call Sourcegraph_describe(3)<cr>
-		noremap <silent> ,ej :call Sourcegraph_usages(3)<cr>
-		noremap <silent> ,ok :call Sourcegraph_describe(4)<cr>
-		noremap <silent> ,ek :call Sourcegraph_usages(4)<cr>
-		noremap <silent> ,ii :call Sourcegraph_show_documentation(0)<cr>
-		noremap <silent> ,ih :call Sourcegraph_show_documentation(1)<cr>
-		noremap <silent> ,il :call Sourcegraph_show_documentation(2)<cr>
-		noremap <silent> ,ij :call Sourcegraph_show_documentation(3)<cr>
-		noremap <silent> ,ik :call Sourcegraph_show_documentation(4)<cr>
+		noremap <silent> ;a :call Sourcegraph_jump_to_definition()<cr>
+		noremap <silent> ;ss :call Sourcegraph_describe(0)<cr>
+		noremap <silent> ;dd :call Sourcegraph_usages(0)<cr>
+		noremap <silent> ;f :call Sourcegraph_search_site()<cr>
+		noremap <silent> ;sh :call Sourcegraph_describe(1)<cr>
+		noremap <silent> ;dh :call Sourcegraph_usages(1)<cr>
+		noremap <silent> ;sl :call Sourcegraph_describe(2)<cr>
+		noremap <silent> ;dl :call Sourcegraph_usages(2)<cr>
+		noremap <silent> ;sj :call Sourcegraph_describe(3)<cr>
+		noremap <silent> ;dj :call Sourcegraph_usages(3)<cr>
+		noremap <silent> ;sk :call Sourcegraph_describe(4)<cr>
+		noremap <silent> ;dk :call Sourcegraph_usages(4)<cr>
+		noremap <silent> ;gg :call Sourcegraph_show_documentation(0)<cr>
+		noremap <silent> ;gh :call Sourcegraph_show_documentation(1)<cr>
+		noremap <silent> ;gl :call Sourcegraph_show_documentation(2)<cr>
+		noremap <silent> ;gj :call Sourcegraph_show_documentation(3)<cr>
+		noremap <silent> ;gk :call Sourcegraph_show_documentation(4)<cr>
 	endif	
 endfunction
 
@@ -71,27 +71,23 @@ function Disable_SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 0
 	endif
-	unmap ,aa
-	unmap ,oo
-	unmap ,ee
-	unmap ,uu
-	unmap ,ah
-	unmap ,oh
-	unmap ,eh
-	unmap ,aj
-	unmap ,oj
-	unmap ,ej
-	unmap ,ak
-	unmap ,ok
-	unmap ,ek
-	unmap ,al
-	unmap ,ol
-	unmap ,el
-	unmap ,ii
-	unmap ,ih
-	unmap ,ij
-	unmap ,ik
-	unmap ,il
+	unmap ;a
+	unmap ;ss
+	unmap ;dd
+	unmap ;ff
+	unmap ;sh
+	unmap ;dh
+	unmap ;sj
+	unmap ;dj
+	unmap ;sk
+	unmap ;dk
+	unmap ;sl
+	unmap ;dl
+	unmap ;gg
+	unmap ;gh
+	unmap ;gj
+	unmap ;gk
+	unmap ;gl
 	let g:sg_default_keybindings = 0
 endfunction
 
