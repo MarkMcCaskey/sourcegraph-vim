@@ -10,9 +10,10 @@ Contents                            *SG-VimContents* *Sourcegraph-VimContents*
 	1. Usage............. |SG-VimUsage|
 	2. Mappings.......... |SG-VimMappings|
 	3. License........... |SG-VimLicense|
-	4. Bugs.............. |SG-VimBugs|
-	5. Contributing...... |SG-VimContributing|
-	6. Changelog......... |SG-VimChangelog|
+	4. Functions......... |SG-VimFunctions|
+	5. Bugs.............. |SG-VimBugs|
+	6. Contributing...... |SG-VimContributing|
+	7. Changelog......... |SG-VimChangelog|
 
 
 
@@ -23,33 +24,33 @@ Section 1: Usage			  *SG-VimUsage* *Sourcegraph-VimUsage*
 Section 2: Mappings		    *SG-VimMappings* *Sourcegraph-VimMappings*
 
 The default keybindings are:
-;a  :call Sourcegraph_jump_to_definition()<cr>
-;ss :call Sourcegraph_describe(0)<cr>
-;dd :call Sourcegraph_usages(0)<cr>
-;f  :call Sourcegraph_search_site()<cr>
-;sh :call Sourcegraph_describe(1)<cr>
-;dh :call Sourcegraph_usages(1)<cr>
-;sl :call Sourcegraph_describe(2)<cr>
-;dl :call Sourcegraph_usages(2)<cr>
-;sj :call Sourcegraph_describe(3)<cr>
-;dj :call Sourcegraph_usages(3)<cr>
-;sk :call Sourcegraph_describe(4)<cr>
-;dk :call Sourcegraph_usages(4)<cr>
-;gg :call Sourcegraph_show_documentation(0)<cr>
-;gh :call Sourcegraph_show_documentation(1)<cr>
-;gl :call Sourcegraph_show_documentation(2)<cr>
-;gj :call Sourcegraph_show_documentation(3)<cr>
-;gk :call Sourcegraph_show_documentation(4)<cr>
+;a  :call |Sourcegraph_jump_to_definition|()<cr>
+;ss :call |Sourcegraph_describe|(0)<cr>
+;dd :call |Sourcegraph_usages|(0)<cr>
+;f  :call |Sourcegraph_search_site|()<cr>
+;sh :call |Sourcegraph_describe|(1)<cr>
+;dh :call |Sourcegraph_usages|(1)<cr>
+;sl :call |Sourcegraph_describe|(2)<cr>
+;dl :call |Sourcegraph_usages|(2)<cr>
+;sj :call |Sourcegraph_describe|(3)<cr>
+;dj :call |Sourcegraph_usages|(3)<cr>
+;sk :call |Sourcegraph_describe|(4)<cr>
+;dk :call |Sourcegraph_usages|(4)<cr>
+;gg :call |Sourcegraph_show_documentation|(0)<cr>
+;gh :call |Sourcegraph_show_documentation|(1)<cr>
+;gl :call |Sourcegraph_show_documentation|(2)<cr>
+;gj :call |Sourcegraph_show_documentation|(3)<cr>
+;gk :call |Sourcegraph_show_documentation|(4)<cr>
 
 You can prevent these defaults from being loaded by adding let g:sg_default_keybindings = 0 to your .vimrc.
 
 You can define new keybindings by adding:
 
-:noremap <silent> <keys> :call Sourcegraph_jump_to_definition(0)<cr>
-:noremap <silent> <keys> :call Sourcegraph_describe(0)<cr>
-:noremap <silent> <keys> :call Sourcegraph_usages(0)<cr>
-:noremap <silent> <keys> :call Sourcegraph_search_site()<cr>
-:noremap <silent> <keys> :call Sourcegraph_show_documentation(0)<cr>
+:noremap <silent> <keys> :call |Sourcegraph_jump_to_definition|(0)<cr>
+:noremap <silent> <keys> :call |Sourcegraph_describe|(0)<cr>
+:noremap <silent> <keys> :call |Sourcegraph_usages|(0)<cr>
+:noremap <silent> <keys> :call |Sourcegraph_search_site|()<cr>
+:noremap <silent> <keys> :call |Sourcegraph_show_documentation|(0)<cr>
 
 To make direction specific buffer opening, call the above functions with one of the following values:
 
@@ -68,7 +69,190 @@ Due to the way Vim handles keybindings by level of specificity, trying to map th
 Section 3: License		      *SG-VimLicense* *Sourcegraph-VimLicense*
 
 ==============================================================================
-Section 4: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
+Section 4: Functions			*SG-VimFunctions* *Sourcegraph-VimFunctions*
+
+This section is mostly for developers.  Most users won't need to be familiar with most of the information in this section.
+
+------------------------------------------------------------------------------
+
+Supported_file:				*SG-VimSupported_file* *Sourcegraph-VimSupported_file*
+
+This function checks if the file currently being edited is supported.
+
+This function takes no arguments and returns either a 0, 1, or 2. A return value of 0 indicates that the file type of the file currently being edited is not supported by src.  A return value of 1 indicates that the file type is supported by src and the user has support for it installed locally.  A return value of 2 indicates that src supports it but the user does not have support for it installed locally.
+
+NOTE: this function calls outside programs.  This function should not be called without first checking that `src` is installed.
+
+------------------------------------------------------------------------------
+
+SG_Keybindings:				*SG-ViwSG_Keybindings* *Sourcegraph-VimSG_Keybindings* *SG_Keybindings*
+
+This function sets the default keybindings for Sourcegraph-Vim.
+
+This function takes no arguments and has no return value.
+
+NOTE: this function has side effects.  It runs automatically unless g:sg_default_keybindings is set to 0 in your .vimrc.
+
+------------------------------------------------------------------------------
+
+Disable_SG_Keybindings:			*SG-VimDisable_SG_Keybindings* *Sourcegraph-VimDisable_SG_Keybindings* *Disable_SG_Keybindings*
+
+This function unmaps the default keybindings set by |SG_Keybindings|
+
+This function takes no arguments and has no return value.
+
+NOTE: this function has side effects.  It is never called in normal use by Sourcegraph-Vim.  Also it sets g:sg_default_keybindings to 0, creating it if it does not already exist.
+
+------------------------------------------------------------------------------
+
+Sourcegraph_call_src:			*SG-VimSourcegraph_call_src* *Sourcegraph-VimSourcegraph_call_src* *Sourcegraph_call_src*
+
+This function calls src with the correct flags and returns the output.  It's a wrapper function that has some error handling in it.
+
+This function takes one argument indicating whether the `--no-examples` flag should be passed to src and returns the output of src as a string.
+
+NOTE: this function has side effects.  It runs the `src` program, it should not be called without first checking that `src` exists.  It also runs the function |Get_byte_offset| to get the current position of the cursor.  This function handles the |SG-VimFish| bug.
+
+------------------------------------------------------------------------------
+
+SG_display_JSON:			*SG-VimSG_display_JSON* *Sourcegraph-VimSG_display_JSON* *SG_display_JSON*
+
+This function is used to print JSON output to a buffer.
+
+This function takes one argument, a string that contains the output from src and has no return value.
+
+NOTE: this function has side effects.  It sets the buftype and writes to the current buffer.  It also calls the function |SG_parse_src|.
+
+------------------------------------------------------------------------------
+
+SG_open_buffer:				*SG-VimSG_open_buffer* *Sourcegraph-VimSG_open_buffer* *SG_open_buffer*
+
+This function opens a buffer in the specified position and starts editing the specified file.
+
+This function takes two arguments, a buffer position argument and a file name arugment.  The buffer position argument corresponds to the following:
+0 - use default buffer opening location
+1 - open to the left
+2 - open to the right
+3 - open below
+4 - open above
+This function has no return value.
+
+NOTE: this function has side effects.  It opens a new buffer and temporarily changes either the splitright or splitbelow values.
+NOTE: this function is currently implementing a hack solution to prevent conflicting buffer names by continually appending an additional _ to each new buffer.  This is likely to cause problems in long term use.  This should be fairly straightforward to fix.
+
+------------------------------------------------------------------------------
+
+SG_jump_info:			*SG-VimSG_jump_info* *Sourcegraph-VimSG_jump_info* *SG_jump_info*
+
+This function parses the output of src and returns the data necessary for |Sourcegraph_jump_to_definition|.
+
+This function takes one argument, a string containing the output of src and returns a list containing the location of the file and the starting byte in that order or an empty list if the string could not be parsed properly.
+
+NOTE: this function has side effects.  It calls the function |SG_parse_JSON| and prints using 'echom'.
+
+------------------------------------------------------------------------------
+
+Sourcegraph_show_documentation:			*SG-VimSourcegraph_show_documentation* *Sourcegraph-VimSourcegraph_show_documentation* *Sourcegraph_show_documentation*
+
+This function opens a new buffer and fills it with the DocHTML returned from `src`.
+
+This function takes one argument, indicating buffer position that gets passed to |SG_open_buffer| (buffer position values are explained there).  This function returns either -1, indicating failure, or 1 indicating success.
+
+NOTE: this function has side effects.  It opens a buffer using |SG_open_buffer|, changes buftype of the new buffer, and prints to the new buffer.  It also prints to 'echom' if no documentation could be found.
+
+------------------------------------------------------------------------------
+
+SG_get_JSON_val:			*SG-VimSG_get_JSON_val* *Sourcegraph-VimSG_get_JSON_val* *SG_get_JSON_val*
+
+This function takes looks for a specific JSON value in `src` output and returns the corresponding output.
+
+This function takes two arguments, the first is the key to search for, the second is an integer specifying whether or not to include examples, it is passed to |Sourcegraph_call_src| (see this function for an explanation of possible values for the second argument) and returns either an empty string if nothing was found or the corresponding value to the key that was passed in.
+
+NOTE: this function has side effects.  This function independently calls |sourcegraph_call_src|, this is probably a mistake and should be looked into further.  There may also be a bug in this function such that it cannot find nested values (i.e. dictionaries that return dictionaries are not searched), this should be investigated.
+
+------------------------------------------------------------------------------
+
+SG_parse_JSON:			*SG-VimSG_parse_JSON* *Sourcegraph-VimSG_parse_JSON* *SG_parse_JSON*
+
+This function is a state machine that iterates over the characters in the output of src to parse it.  This function is complicated and probably difficult to maintain, |SG_parse_JSON_exp| should probably replace it.
+
+This function takes one argument, a string to be parsed (probably the output of `src`) and it returns a parsed version of the input as a dictionary.
+
+NOTE: this function uses a silent execute "normal!...." to update the variable c.  This should probably be changed or avoided.  This was done because it was the best option I could find at the time.  This should be investigated and ideally changed.  This is a huge potential point of failure.
+
+------------------------------------------------------------------------------
+
+Sourcegraph_jump_to_definition:			*SG-VimSourcegraph_jump_to_definition* *Sourcegraph-VimSourcegraph_jump_to_definition* *Sourcegraph_jmup_to_definition*
+
+This function opens a new file and puts the cursor on the desired symbol.
+
+This function takes no arguments and returns a -1 on failure.
+
+NOTE: this function has side effects.  This function calls |Sourcegraph_call_src|, |SG_jump_info|, changes the current file being edited and moves the cursor.  It prints with 'echom' on failure.
+This function only has a return value on failure, this should probably be fixed.
+
+------------------------------------------------------------------------------
+
+Sourcegraph_describe:			*SG-VimSourcegraph_describe* *Sourcegraph-VimSourcegraph_describe* *Sourcegraph_describe*
+
+This function opens a buffer and prints the UnitType information for the specified symbol.
+
+This function takes one argument indicating buffer position, this is passed to |SG_open_buffer| (look there for information about the possible values of the argument) and returns either a -1 on failure or a 1 on success.
+
+NOTE: this function has side effects.  This function calls |Sourcegraph_call_src|, |SG_parse_JSON_exp|, and |SG_open_buffer|.  It opens a new buffer and writes to it.  It also calls `src` directly and should not be called without first ensuring that `src` exists.  
+NOTE: this function expects a later version of `src` (TODO: find out specifics and update this description)
+
+------------------------------------------------------------------------------
+
+Sourcegraph_usages:			*SG-VimSourcegraph_usages* *Sourcegraph-VimSourcegraph_usages* *Sourcegraph_usages*
+
+This function opens a buffer and prints the examples returned from src.
+
+This function takes one argument specifying buffer position that is passed to |SG_open_buffer| (look there for information about possible values of this argument.  It returns -1 on failure and 1 on success.
+
+NOTE: this function has side effects.  It calls |SG_parse_JSON_exp|, |Sourcegraph_call_src|(0), and |SG_open_buffer|.  It opens a new buffer and prints to it.  It also prints with 'echom' on failure.
+
+------------------------------------------------------------------------------
+
+SG_parse_JSON_exp:			*SG-VimSG_parse_JSON_exp* *Sourcegraph-VimSG_parse_JSON_exp* *SG_parse_JSON_exp*
+
+This function takes a string as input and returns a list containing the parsed information.  This function was designed to replace |SG_parse_JSON|.
+
+NOTE: this function uses a silent execute "normal!..." to update the variable l:ret.  This is potentially dangerous and should ideally be changed.  This function is experimental and may not produce the desired output.
+
+------------------------------------------------------------------------------
+
+Sourcegraph_search_site:			*SG-VimSourcegraph_search_site* *Sourcegraph-VimSourcegraph_search_site* *Sourcegraph_search_site*
+
+This function opens a web browser and loads a webpage on Sourcegraph's website with the relevant information.
+
+This function takes no arguments and returns either -1 if the information needed could not be found in `src`'s output, 0 if no browser could be found on the user's computer, and 1 if successful terminated (NOTE: this does not guarentee that a web browser was opened (See |SG-VimBugs|)).
+
+NOTE: this function has side effects.  It tries to open a web browser.  This function calls |SG_get_JSON_val|("Unit",0).  This function should ideally be tested and improved.  It should work in most situations, but this has not been tested throughly.
+
+------------------------------------------------------------------------------
+
+Get_byte_offest:			*SG-VimGet_byte_offset* *Sourcegraph-VimGet_byte_offset* *Get_byte_offset*
+
+This function will return the byte offset from the beginning of the file of the word that the cursor is currently on.
+
+This function takes no arguments and returns the byte value of the word that the cursor is currently on.
+
+NOTE: this function moves the cursor, it appears to be robust but more testing should be done to ensure it doesn't have any unintended side effects.
+
+------------------------------------------------------------------------------
+
+SG_parse_src:				*SG-VimSG_parse_src* *Sourcegraph-VimSG_parse_src* *SG_parse_src*
+
+This function formats src output for a vaguely Go/C-like language.  This function should probably be completely redone or removed.
+
+This function takes one argument which is a string to be formatted and returns the formatted string.
+
+NOTE: this function is depricated.  Formatting of code should not be done in VimL.  This function produces semi-acceptable output for Go/C-like languages.
+
+
+==============================================================================
+Section 5: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
 
 *SG-VimFish* *Sourcegraph-VimFish*
 Currently, using Fish (The friendly interactive shell) as the default shell
@@ -79,14 +263,25 @@ or
 set shell/bin/sh 
 to your .vimrc.
 
+------------------------------------------------------------------------------
+
 Using Sourcegraph_search_site() inside of a TTY will cause error text to be written over the current Vim session.  You can clear this text by running :redraw!
 
+------------------------------------------------------------------------------
+
+SG_open_buffer currently uses a hack-y solution to prevent buffer name conflict.  This is likely to cause problems if someone calls the function many times without restarting the plugin.  It currently adds an additional _ each time a new buffer needs to be opened.
+
+------------------------------------------------------------------------------
+
+There may be a bug in |SG_get_JSON_val|.  It (probably) does not search recursively.  `src` often(always?) returns nested dictionaries.  These are currently not being searched.  This will cause it to fail when it shouldn't.
+Also, this function probably shouldn't be indepently calling |Sourcegraph_call_src|
+
 ==============================================================================
-Section 5: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*
+Section 6: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*
 
 Submit an issue or a pull request!  Checkback for more information later.
 (https://github.com/MarkMcCaskey/sourcegraph-vim)
 
 ==============================================================================
-Section 6: Changelog		  *SG-VimChangelog* *Sourcegraph-VimChangelog*
+Section 7: Changelog		  *SG-VimChangelog* *Sourcegraph-VimChangelog*
 
