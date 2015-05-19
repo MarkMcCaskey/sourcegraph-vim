@@ -7,7 +7,7 @@
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
-let g:sg_vim_loaded=6
+let g:sg_vim_loaded=7
 
 "consider reading from configuration file or other source
 let s:supported_languages={"go": "go","py": "python","java": "java","js": "nodejs","rb": "ruby"}
@@ -130,6 +130,12 @@ function Sourcegraph_call_src( no_examples )
 			\to your .vimrc.  Otherwise, please file a bug report 
 			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
+	"not sure if this is a safe thing to check for
+	if match( l:output, "(exit status 1)" )
+		echom "Invalid output. Check src's output"
+		return ""
+	endif
+	echom l:output
 	return l:output
 endfunction
 
@@ -277,7 +283,11 @@ endfunction
 "This function expects a new version of src, see comment inside
 function Sourcegraph_describe( buffer_position )
 	let l:raw_src_output = Sourcegraph_call_src( 0 )
+	if l:raw_src_output == ""
+		return -1
+	endif
 	let l:src_output = SG_parse_JSON_exp( l:raw_src_output )
+
 	if ! has_key( l:src_output, "Def" )
 		echom "No results found"
 		return -1
@@ -299,7 +309,13 @@ function Sourcegraph_describe( buffer_position )
 endfunction
 
 function Sourcegraph_usages( buffer_position )
-	let l:output = SG_parse_JSON_exp( Sourcegraph_call_src(0))
+	let l:src_output = Sourcegraph_call_src(0)
+	"ensure output is valid
+	if l:src_output == ""
+		return -1
+	endif
+
+	let l:output = SG_parse_JSON_exp( l:src_output )
 	if l:output ==? {} || ! has_key( l:output, "Examples" ) || empty(l:output["Examples"])
 		echom "No results found"
 		return -1
@@ -312,9 +328,17 @@ endfunction
 
 "experimental parse JSON function
 function SG_parse_JSON_exp( input )
-	let l:ret = join(split(a:input,'true'),'1')
+	"remove new lines
+	let l:ret = join(split(a:input,"\n"))
+
+	"replace true, false, and null with numerical values
+	let l:ret = join(split(l:ret,'true'),'1')
 	let l:ret = join(split(l:ret,'false'),'0')
 	let l:ret = join(split(l:ret,'null'),0)
+
+	"this line was to parse the string into a dictionary
+	"protect against bad input
+	echo l:ret
 	silent execute "normal! :let l:retl = " . l:ret . "\<cr>"
 	return l:ret
 endfunction

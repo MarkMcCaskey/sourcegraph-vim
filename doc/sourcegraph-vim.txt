@@ -285,3 +285,4 @@ Submit an issue or a pull request!  Checkback for more information later.
 ==============================================================================
 Section 7: Changelog		  *SG-VimChangelog* *Sourcegraph-VimChangelog*
 
+007: error handling such that src failing should never cause the screen to be flooded with error messages
