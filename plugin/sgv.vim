@@ -1,16 +1,18 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: Mar 18 2015
+" Last Change: May 19 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
+"set up
 if exists( "g:sg_vim_loaded" )
 	finish
 endif
 let g:sg_vim_loaded=6
 
-"consider reading from configuration file
+"consider reading from configuration file or other source
 let s:supported_languages={"go": "go","py": "python","java": "java","js": "nodejs","rb": "ruby"}
 
+"ensure dependencies are satisfied
 if !executable( "src" ) 
 	echom "src(https://srclib.org/) is required to use this plugin"
 	finish
@@ -25,23 +27,34 @@ function Supported_file()
 	if bufname("%") ==? ""
 		return 0
 	endif
+
+	"get file extension
 	let l:ft_list = split(bufname("%"), "\\.")
 	let l:ft = l:ft_list[len(l:ft_list)-1]
 
+	"check if file extension is recognized
 	if has_key(s:supported_languages,l:ft)
+		"check if there's support locally
 		if l:src_out =~ "sourcegraph.com/sourcegraph/srclib-" . s:supported_languages[l:ft]
 				return 1
 		endif
-		silent echom "This language is supported by src, but you do not have it installed"
+		return 2
 	endif
 	return 0
 endfunction
 
 "close plugin if editing a file not currently supported
-if ! Supported_file()
-       finish
+let SG_check_supported = Supported_file()
+if SG_check_supported == 0
+	unlet SG_check_supported
+	finish	
+elseif SG_check_supported == 2
+	silent echom "This language is supported by src, but you do not have it installed locally"
 endif       
+unlet SG_check_supported
 
+"intialize default keybindings
+"maybe this should be changed later
 function SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 1
@@ -67,6 +80,8 @@ function SG_Keybindings()
 	endif	
 endfunction
 
+"turn off default keybindings
+"this function isn't used during normal use
 function Disable_SG_Keybindings()
 	if ! exists( "g:sg_default_keybindings" )
 		let g:sg_default_keybindings = 0
@@ -94,6 +109,11 @@ endfunction
 "function to be called by jump..., describe, and usages
 "TODO: find a way for system() to run more smoothly (open a background process
 "and run the command there, call a python or perl script, etc.)
+"Background process may not be necessary, runs fine on modern computers
+"
+"Function info: takes one argument, if 1 is passed in, the no-examples flag
+"will be passed to src. This function returns the string containing all the
+"text from src
 function Sourcegraph_call_src( no_examples )
 	let l:sg_no_examples = ""
 	let l:output = "{}\n"
@@ -105,14 +125,15 @@ function Sourcegraph_call_src( no_examples )
 			\expand("%:t") . ' --start-byte ' . 
 			\Get_byte_offset() . l:sg_no_examples . " 2>&1")
 	catch /^Vim\%((\a\+)\)=:E484/
-		"catch fish specific error
-		echom "If your default shell is fish, add 'set shell=/bin/bash'
+		"catch Fish specific error
+		echom "If your default shell is Fish, add 'set shell=/bin/bash'
 			\to your .vimrc.  Otherwise, please file a bug report 
 			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
 	return l:output
 endfunction
 
+"This function is probably unneeded
 function SG_display_JSON( src_input )
 	setlocal buftype=nofile
 	call append(0,split(SG_parse_src(a:src_input),"\n"))
@@ -179,6 +200,8 @@ function Sourcegraph_show_documentation( buffer_position )
 	return 1
 endfunction
 
+"This function should either be changed or a similar function should be made
+"that doesn't independently run SG_parse_JSON
 function SG_get_JSON_val( search_val, examples )
 	 let l:ret = SG_parse_JSON( Sourcegraph_call_src( a:examples ) )
 	 if ! has_key( l:ret, a:search_val )
@@ -251,6 +274,7 @@ function Sourcegraph_jump_to_definition()
 	endif
 endfunction
 
+"This function expects a new version of src, see comment inside
 function Sourcegraph_describe( buffer_position )
 	let l:raw_src_output = Sourcegraph_call_src( 0 )
 	let l:src_output = SG_parse_JSON_exp( l:raw_src_output )
@@ -266,6 +290,9 @@ function Sourcegraph_describe( buffer_position )
 	let l:unit = l:src_output["Def"]["UnitType"]
 	call SG_open_buffer( a:buffer_position, "" )
 	"temporarily add -t def
+	"This system call expects a newer version of src (TODO: research this
+	"and figure out exactly what should be done and add handling for all
+	"versions of src that may be out there)
 	let l:out = system("src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output )
 	call append(0,l:out)
 	return 1
@@ -289,7 +316,7 @@ function SG_parse_JSON_exp( input )
 	let l:ret = join(split(l:ret,'false'),'0')
 	let l:ret = join(split(l:ret,'null'),0)
 	silent execute "normal! :let l:retl = " . l:ret . "\<cr>"
-	return l:retl
+	return l:ret
 endfunction
 
 
