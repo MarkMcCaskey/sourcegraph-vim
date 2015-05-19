@@ -124,6 +124,7 @@ function Sourcegraph_call_src( no_examples )
 		let l:output = system("src api describe --file " . 
 			\expand("%:t") . ' --start-byte ' . 
 			\Get_byte_offset() . l:sg_no_examples . " 2>&1")
+		"echom "src api describe --file " . expand("%s:t") . ' --start-byte ' . Get_byte_offset() . l:sg_no_examples
 	catch /^Vim\%((\a\+)\)=:E484/
 		"catch Fish specific error
 		echom "If your default shell is Fish, add 'set shell=/bin/bash'
@@ -131,11 +132,12 @@ function Sourcegraph_call_src( no_examples )
 			\at https://github.com/MarkMcCaskey/sourcegraph-vim"
 	endtry
 	"not sure if this is a safe thing to check for
-	if match( l:output, "(exit status 1)" )
+	if match( l:output, "(exit status 1)" ) != -1
+	"	echom l:output
 		echom "Invalid output. Check src's output"
 		return ""
 	endif
-	echom l:output
+	"echom l:output
 	return l:output
 endfunction
 
@@ -271,8 +273,8 @@ function Sourcegraph_jump_to_definition()
 		endif
 		if filereadable(l:jump_list[0])
 			"open a split with file and move cursor to correct position
-			execute "normal! :edit " . l:jump_list[0] . "\<cr>"
-			execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1) . "jzz\<cr>"
+			silent execute "normal! :edit " . l:jump_list[0] . "\<cr>"
+			silent execute "normal! gg" . (byte2line( l:jump_list[1] ) - 1 ) . "j\<cr>"
 		else
 			echom "File not found"
 			return -1
@@ -295,7 +297,7 @@ function Sourcegraph_describe( buffer_position )
 	if ! has_key( l:src_output["Def"], "UnitType" ) 
 		echom "No results found"
 		return -1
-	endif
+	endif	
 	echom string(l:src_output)
 	let l:unit = l:src_output["Def"]["UnitType"]
 	call SG_open_buffer( a:buffer_position, "" )
@@ -340,7 +342,7 @@ function SG_parse_JSON_exp( input )
 	"protect against bad input
 	echo l:ret
 	silent execute "normal! :let l:retl = " . l:ret . "\<cr>"
-	return l:ret
+	return l:retl
 endfunction
 
 
