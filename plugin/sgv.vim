@@ -187,12 +187,12 @@ endfunction
 
 "returns a list containing: [location of file, starting byte]
 function SG_jump_info( src_input )
-	let l:out = SG_parse_JSON( a:src_input )
-	if ! (has_key( l:out, "File" ) && has_key( l:out, "DefStart" ))
+	let l:out = SG_parse_JSON_exp( a:src_input )
+	if (! has_key( l:out, "Def" )) || (! has_key( l:out["Def"], "File" )) || (! has_key(l:out["Def"], "DefStart"))
 		echom "No results found"
 		return []
 	endif
-	return [l:out["File"],l:out["DefStart"]]
+	return [l:out["Def"]["File"],l:out["Def"]["DefStart"]]
 endfunction
 
 function Sourcegraph_show_documentation( buffer_position )
