@@ -2,7 +2,7 @@
 
 *Sourcegraph-vim* *SG-Vim*
 A tool that gives Vim access to srclib, a polyglot code analysis library.
-Supports doc lookups, find-usages, and type information.
+Supports doc look-ups, find-usages, and type information.
 
 ==============================================================================
 Contents                            *SG-VimContents* *Sourcegraph-VimContents*
@@ -129,7 +129,7 @@ SG_open_buffer:				*SG-VimSG_open_buffer* *Sourcegraph-VimSG_open_buffer* *SG_op
 
 This function opens a buffer in the specified position and starts editing the specified file.
 
-This function takes two arguments, a buffer position argument and a file name arugment.  The buffer position argument corresponds to the following:
+This function takes two arguments, a buffer position argument and a file name argument.  The buffer position argument corresponds to the following:
 0 - use default buffer opening location
 1 - open to the left
 2 - open to the right
@@ -226,9 +226,9 @@ Sourcegraph_search_site:			*SG-VimSourcegraph_search_site* *Sourcegraph-VimSourc
 
 This function opens a web browser and loads a webpage on Sourcegraph's website with the relevant information.
 
-This function takes no arguments and returns either -1 if the information needed could not be found in `src`'s output, 0 if no browser could be found on the user's computer, and 1 if successful terminated (NOTE: this does not guarentee that a web browser was opened (See |SG-VimBugs|)).
+This function takes no arguments and returns either -1 if the information needed could not be found in `src`'s output, 0 if no browser could be found on the user's computer, and 1 if successful terminated (NOTE: this does not guarantee that a web browser was opened (See |SG-VimBugs|)).
 
-NOTE: this function has side effects.  It tries to open a web browser.  This function calls |SG_get_JSON_val|("Unit",0).  This function should ideally be tested and improved.  It should work in most situations, but this has not been tested throughly.
+NOTE: this function has side effects.  It tries to open a web browser.  This function calls |SG_get_JSON_val|("Unit",0).  This function should ideally be tested and improved.  It should work in most situations, but this has not been tested thoroughly.
 
 ------------------------------------------------------------------------------
 
@@ -248,8 +248,17 @@ This function formats src output for a vaguely Go/C-like language.  This functio
 
 This function takes one argument which is a string to be formatted and returns the formatted string.
 
-NOTE: this function is depricated.  Formatting of code should not be done in VimL.  This function produces semi-acceptable output for Go/C-like languages.
+NOTE: this function is deprecated.  Formatting of code should not be done in VimL.  This function produces semi-acceptable output for Go/C-like languages.
 
+------------------------------------------------------------------------------
+
+SG_printable_JSON:			*SG-VimSG_printable_JSON* *Sourcegraph-VimSG_printable_JSON* *SG_printable_JSON*
+
+This function makes the JSON string more like it used to be before being parsed into Vim.  It replaces ' 0,'s with false and ' 1,'s with true.  It doesn't support null and may cause problems if those numbers are seen.  This is a quick fix and should be fleshed out more later.
+
+This function takes one argument, the JSON as a string and it returns the formatted JSON.
+
+NOTE: this function needs more development.  The way JSON is stored in Vim for this plugin may need to change. 
 
 ==============================================================================
 Section 5: Bugs		  		    *SG-VimBugs* *Sourcegraph-VimBugs*
@@ -274,7 +283,7 @@ SG_open_buffer currently uses a hack-y solution to prevent buffer name conflict.
 ------------------------------------------------------------------------------
 
 There may be a bug in |SG_get_JSON_val|.  It (probably) does not search recursively.  `src` often(always?) returns nested dictionaries.  These are currently not being searched.  This will cause it to fail when it shouldn't.
-Also, this function probably shouldn't be indepently calling |Sourcegraph_call_src|
+Also, this function probably shouldn't be independently calling |Sourcegraph_call_src|
 
 ==============================================================================
 Section 6: Contributing	    *SG-VimContributing* *Sourcegraph-VimContributing*

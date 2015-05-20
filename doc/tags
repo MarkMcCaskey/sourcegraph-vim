@@ -18,6 +18,7 @@ SG-VimSG_open_buffer	sourcegraph-vim.txt	/*SG-VimSG_open_buffer*
 SG-VimSG_parse_JSON	sourcegraph-vim.txt	/*SG-VimSG_parse_JSON*
 SG-VimSG_parse_JSON_exp	sourcegraph-vim.txt	/*SG-VimSG_parse_JSON_exp*
 SG-VimSG_parse_src	sourcegraph-vim.txt	/*SG-VimSG_parse_src*
+SG-VimSG_printable_JSON	sourcegraph-vim.txt	/*SG-VimSG_printable_JSON*
 SG-VimSourcegraph_call_src	sourcegraph-vim.txt	/*SG-VimSourcegraph_call_src*
 SG-VimSourcegraph_describe	sourcegraph-vim.txt	/*SG-VimSourcegraph_describe*
 SG-VimSourcegraph_jump_to_definition	sourcegraph-vim.txt	/*SG-VimSourcegraph_jump_to_definition*
@@ -35,6 +36,7 @@ SG_open_buffer	sourcegraph-vim.txt	/*SG_open_buffer*
 SG_parse_JSON	sourcegraph-vim.txt	/*SG_parse_JSON*
 SG_parse_JSON_exp	sourcegraph-vim.txt	/*SG_parse_JSON_exp*
 SG_parse_src	sourcegraph-vim.txt	/*SG_parse_src*
+SG_printable_JSON	sourcegraph-vim.txt	/*SG_printable_JSON*
 Sourcegraph-Vim.txt	sourcegraph-vim.txt	/*Sourcegraph-Vim.txt*
 Sourcegraph-VimBugs	sourcegraph-vim.txt	/*Sourcegraph-VimBugs*
 Sourcegraph-VimChangelog	sourcegraph-vim.txt	/*Sourcegraph-VimChangelog*
@@ -54,6 +56,7 @@ Sourcegraph-VimSG_open_buffer	sourcegraph-vim.txt	/*Sourcegraph-VimSG_open_buffe
 Sourcegraph-VimSG_parse_JSON	sourcegraph-vim.txt	/*Sourcegraph-VimSG_parse_JSON*
 Sourcegraph-VimSG_parse_JSON_exp	sourcegraph-vim.txt	/*Sourcegraph-VimSG_parse_JSON_exp*
 Sourcegraph-VimSG_parse_src	sourcegraph-vim.txt	/*Sourcegraph-VimSG_parse_src*
+Sourcegraph-VimSG_printable_JSON	sourcegraph-vim.txt	/*Sourcegraph-VimSG_printable_JSON*
 Sourcegraph-VimSourcegraph_call_src	sourcegraph-vim.txt	/*Sourcegraph-VimSourcegraph_call_src*
 Sourcegraph-VimSourcegraph_describe	sourcegraph-vim.txt	/*Sourcegraph-VimSourcegraph_describe*
 Sourcegraph-VimSourcegraph_jump_to_definition	sourcegraph-vim.txt	/*Sourcegraph-VimSourcegraph_jump_to_definition*

@@ -296,7 +296,7 @@ endfunction
 
 "This function expects a new version of src, see comment inside
 function Sourcegraph_describe( buffer_position )
-	let l:raw_src_output = Sourcegraph_call_src( 0 )
+	let l:raw_src_output = Sourcegraph_call_src( 1 )
 	if l:raw_src_output == ""
 		return -1
 	endif
@@ -306,23 +306,33 @@ function Sourcegraph_describe( buffer_position )
 		echom "No results found"
 		return -1
 	endif
-	if ! has_key( l:src_output["Def"], "UnitType" ) 
+	if ! has_key( l:src_output["Def"], "Data" ) 
 		echom "No results found"
 		return -1
 	endif	
-	echom string(l:src_output)
-	let l:unit = l:src_output["Def"]["UnitType"]
-	call SG_open_buffer( a:buffer_position, "" )
+
+	"echom string(l:src_output)
+	
+	"let l:unit = l:src_output["Def"]["UnitType"]
+	silent call SG_open_buffer( a:buffer_position, "" )
+
+	set filetype=javascript
+
 	"temporarily add -t def
 	"This system call expects a newer version of src (TODO: research this
 	"and figure out exactly what should be done and add handling for all
 	"versions of src that may be out there)
-	let l:out = system("src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output )
-	echom "src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output 
-	call append(0,l:out)
+	"
+	"let l:out = system("src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output )
+	"echom "src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output 
+	
+	"basic formatting
+	let l:p_str = split(string(l:src_output["Def"]["Data"]), ',\zs')
+	call append(0, l:p_str)
 	return 1
 endfunction
 
+"display examples
 function Sourcegraph_usages( buffer_position )
 	let l:src_output = Sourcegraph_call_src(0)
 	"ensure output is valid
@@ -351,11 +361,19 @@ function SG_parse_JSON_exp( input )
 	let l:ret = join(split(l:ret,'false'),'0')
 	let l:ret = join(split(l:ret,'null'),0)
 
+	"echo l:ret
 	"this line was to parse the string into a dictionary
 	"protect against bad input
-	echo l:ret
 	silent execute "normal! :let l:retl = " . l:ret . "\<cr>"
 	return l:retl
+endfunction
+
+"this function isn't fully working -- probably a good idea to have it though
+function SG_printable_JSON( input )
+	let l:ret = join(split( a:input, ' 1,' ), ' true,'))
+	"no support for null... probably should be fixed
+	let l:ret = join(split( l:ret, ' 0,', ' false,' ))
+	return l:ret
 endfunction
 
 
