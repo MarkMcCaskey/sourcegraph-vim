@@ -1,5 +1,5 @@
 " Vim plugin for srclib (https://srclib.org)
-" Last Change: May 19 2015
+" Last Change: May 20 2015
 " Maintainer: mmccask2@gmu.edu
 " License: 
 
@@ -196,14 +196,26 @@ function SG_jump_info( src_input )
 endfunction
 
 function Sourcegraph_show_documentation( buffer_position )
-	let l:output = SG_get_JSON_val( "DocHTML", 1 )
-	if l:output ==? ""
+	"let l:output = SG_get_JSON_val( "DocHTML", 1 )
+	
+	"get output and check it
+	let l:src_output = Sourcegraph_call_src(1)
+	if l:src_output ==? ""
 		echom "No documentation found"
 		return -1
 	endif
+	let l:output = SG_parse_JSON_exp( l:src_output )
+
+	"unsure if these are safe assumptions to make @@@
+	if (! has_key (l:output, "Def")) || (! has_key(l:output["Def"], "Docs" )) || (! has_key(l:output["Def"]["Docs"][0], "Data" ))"|| (! has_key(l:output["Def"]["Docs"], "DocHTML")) 
+		echom "No documentation found"
+		return -1
+	endif
+
+	"open buffer and print doc info	
 	call SG_open_buffer( a:buffer_position, "" )
 	setlocal buftype=nofile
-	let l:ret =split(l:output, '\\n')
+	let l:ret =split(l:output["Def"]["Docs"][0]["Data"], '\n')
 	call append(0, l:ret)
 	return 1
 endfunction
@@ -211,7 +223,7 @@ endfunction
 "This function should either be changed or a similar function should be made
 "that doesn't independently run SG_parse_JSON
 function SG_get_JSON_val( search_val, examples )
-	 let l:ret = SG_parse_JSON( Sourcegraph_call_src( a:examples ) )
+	 let l:ret = SG_parse_JSON_exp( Sourcegraph_call_src( a:examples ) )
 	 if ! has_key( l:ret, a:search_val )
 		 return ""
 	 endif
@@ -306,6 +318,7 @@ function Sourcegraph_describe( buffer_position )
 	"and figure out exactly what should be done and add handling for all
 	"versions of src that may be out there)
 	let l:out = system("src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output )
+	echom "src fmt -u " . l:unit . " --object-type=Def " . " --object=" . l:raw_src_output 
 	call append(0,l:out)
 	return 1
 endfunction
