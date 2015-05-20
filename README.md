@@ -33,7 +33,7 @@ You can prevent these defaults from being loaded by adding `let g:sg_default_key
 
 You can define new keybindings by adding:
 ```
-:noremap <silent> <keys> :call Sourcegraph_jump_to_definition(0)<cr>
+:noremap <silent> <keys> :call Sourcegraph_jump_to_definition()<cr>
 :noremap <silent> <keys> :call Sourcegraph_describe(0)<cr>
 :noremap <silent> <keys> :call Sourcegraph_usages(0)<cr>
 :noremap <silent> <keys> :call Sourcegraph_search_site()<cr>
@@ -63,4 +63,4 @@ For example:
 :help SG-VimContents
 ```
 
-Currently the `usages` function is not implemented and the output of `describe` is poorly formatted, this will be fixed soon.
+Currently the `usages` function is not fully implemented.  All other major functions work.  They may need more polishing or bug fixing, but they work at a basic level.
